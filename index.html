@@ -1,4 +1,40 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Product Catalog</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .product-card {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 10px;
+      width: 300px;
+      float: left;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    }
+    .product-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .product-card h2 {
+      font-size: 1.2em;
+      margin: 0.5em 0;
+    }
+    .product-card .price {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Product Catalog</h1>
+  <div id="product-container"></div>
+
+  <script>
   fetch('products.json')
     .then(res => res.json())
     .then(json => {
