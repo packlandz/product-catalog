@@ -3,12 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Product Catalog by Category</title>
+  <title>Product Catalog with Tabs & Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
   <style>
     * { box-sizing: border-box; }
-
     body {
       font-family: 'Poppins', sans-serif;
       background: #f8fafd;
@@ -16,23 +14,19 @@
       padding: 30px 20px;
       color: #333;
     }
-
-    h1 {
+    h1, h2 {
       text-align: center;
       font-weight: 500;
       color: #1e272e;
       margin-bottom: 20px;
     }
-
     #category-nav {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 12px;
-      margin: 0 auto 30px;
-      max-width: 900px;
+      margin-bottom: 30px;
     }
-
     #category-nav a {
       text-decoration: none;
       color: #2c3e50;
@@ -42,11 +36,9 @@
       background: #ecf0f1;
       transition: background 0.2s ease;
     }
-
     #category-nav a:hover {
       background: #dcdde1;
     }
-
     #product-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -54,7 +46,6 @@
       max-width: 1200px;
       margin: 0 auto 60px;
     }
-
     .product-card {
       background: #fff;
       border-radius: 14px;
@@ -64,12 +55,10 @@
       flex-direction: column;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
     .product-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     }
-
     .product-card img {
       width: 100%;
       height: 160px;
@@ -77,146 +66,188 @@
       border-radius: 10px;
       margin-bottom: 12px;
     }
-
     .product-card h2 {
       font-size: 1rem;
       margin: 0 0 6px;
       color: #2c3e50;
     }
-
     .brand {
       font-size: 0.85rem;
       color: #7f8c8d;
       margin-bottom: 6px;
     }
-
     .description {
       font-size: 0.88rem;
       color: #4b4b4b;
       margin-bottom: auto;
       line-height: 1.4;
     }
-
     .price {
       font-size: 0.95rem;
       font-weight: 600;
       color: #20bf6b;
-      margin: 10px 0 0;
+      margin: 10px 0;
+    }
+    .product-card .btn {
+      margin-right: 6px;
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+    .btn.edit { background-color: #f39c12; }
+    .btn.delete { background-color: #e74c3c; }
+    form {
+      background: #fff;
+      max-width: 600px;
+      margin: 40px auto 0;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    }
+    form input, form textarea, form select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+    }
+    form button {
+      background: #2c3e50;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    form button:hover {
+      background: #1a252f;
     }
   </style>
 </head>
 <body>
+  <h1>Product Catalog</h1>
+  <nav id="category-nav">
+    <a href="#all">All</a>
+    <a href="#best-sellers">Best Sellers</a>
+    <a href="#flower">Flower</a>
+    <a href="#concentrates">Concentrates</a>
+    <a href="#carts">Carts</a>
+    <a href="#disposables">Disposables</a>
+    <a href="#edibles">Edibles</a>
+    <a href="#misc">Miscellaneous</a>
+  </nav>
 
-<h1>Product Catalog</h1>
+  <div id="product-container"></div>
 
-<nav id="category-nav">
-  <a href="#all">All</a>
-  <a href="#best-sellers">Best Sellers</a>
-  <a href="#flower">Flower</a>
-  <a href="#concentrates">Concentrates</a>
-  <a href="#carts">Carts</a>
-  <a href="#disposables">Disposables</a>
-  <a href="#edibles">Edibles</a>
-  <a href="#misc">Miscellaneous</a>
-</nav>
+  <h2>Add / Edit Product</h2>
+  <form id="product-form">
+    <input type="hidden" id="editIndex" />
+    <input type="text" id="name" placeholder="Product Name" required />
+    <input type="text" id="brand" placeholder="Brand" required />
+    <textarea id="desc" placeholder="Description" required></textarea>
+    <input type="number" id="price" placeholder="Price" step="0.01" required />
+    <input type="text" id="image" placeholder="Image URL" required />
+    <select id="category" required>
+      <option value="">Select Category</option>
+      <option value="best-sellers">Best Sellers</option>
+      <option value="flower">Flower</option>
+      <option value="concentrates">Concentrates</option>
+      <option value="carts">Carts</option>
+      <option value="disposables">Disposables</option>
+      <option value="edibles">Edibles</option>
+      <option value="misc">Miscellaneous</option>
+    </select>
+    <button type="submit">Save Product</button>
+  </form>
 
-<div id="product-container"></div>
+  <script>
+    let products = [];
 
-<script>
-  const products = [
-    {
-      name: "Lyfted Flower 3.5g",
-      brand: "Lyfted Farms",
-      desc: "Indoor, premium quality prepack flower.",
-      price: 29.99,
-      image: "https://via.placeholder.com/300x160?text=Flower",
-      category: "flower"
-    },
-    {
-      name: "Delta 9 Gummies",
-      brand: "Happy Treats",
-      desc: "Delicious 25mg THC-infused gummies.",
-      price: 14.99,
-      image: "https://via.placeholder.com/300x160?text=Edibles",
-      category: "edibles"
-    },
-    {
-      name: "Cloud Fuel Cart 1g",
-      brand: "Cloud Fuel",
-      desc: "Premium live resin vape cartridge.",
-      price: 39.99,
-      image: "https://via.placeholder.com/300x160?text=Carts",
-      category: "carts"
-    },
-    {
-      name: "Rosin Dab Jar",
-      brand: "Gold Drop",
-      desc: "High potency cold-pressed rosin concentrate.",
-      price: 49.99,
-      image: "https://via.placeholder.com/300x160?text=Concentrates",
-      category: "concentrates"
-    },
-    {
-      name: "Disposable Vape 2g",
-      brand: "Zap Bar",
-      desc: "Rechargeable and pre-filled with hybrid blend.",
-      price: 34.99,
-      image: "https://via.placeholder.com/300x160?text=Disposables",
-      category: "disposables"
-    },
-    {
-      name: "Top Shelf Bundle",
-      brand: "Variety Pack",
-      desc: "A curated mix of our best-selling products.",
-      price: 99.99,
-      image: "https://via.placeholder.com/300x160?text=Best+Sellers",
-      category: "best-sellers"
-    },
-    {
-      name: "Rolling Tray Kit",
-      brand: "RAW",
-      desc: "Includes tray, papers, tips and grinder.",
-      price: 19.99,
-      image: "https://via.placeholder.com/300x160?text=Misc",
-      category: "misc"
-    }
-  ];
+    function renderProducts(category = "all") {
+      const container = document.getElementById("product-container");
+      container.innerHTML = "";
 
-  function renderProducts(category = "all") {
-    const container = document.getElementById("product-container");
-    container.innerHTML = "";
+      const filtered = category === "all"
+        ? products
+        : products.filter(p => p.category === category);
 
-    const filtered = category === "all"
-      ? products
-      : products.filter(p => p.category === category);
+      if (filtered.length === 0) {
+        container.innerHTML = `<p style="text-align:center;">No products in this category.</p>`;
+        return;
+      }
 
-    if (filtered.length === 0) {
-      container.innerHTML = `<p style="text-align:center; font-size:1rem;">No products in this category yet.</p>`;
-      return;
+      filtered.forEach((product, index) => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.innerHTML = `
+          <img src="${product.image}" alt="${product.name}">
+          <h2>${product.name}</h2>
+          <p class="brand">${product.brand}</p>
+          <p class="description">${product.desc}</p>
+          <span class="price">$${product.price.toFixed(2)}</span>
+          <div>
+            <button class="btn edit" onclick="editProduct(${index})">Edit</button>
+            <button class="btn delete" onclick="deleteProduct(${index})">Delete</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
     }
 
-    filtered.forEach(product => {
-      const card = document.createElement("div");
-      card.className = "product-card";
-      card.innerHTML = `
-        <img src="${product.image}" alt="${product.name}">
-        <h2>${product.name}</h2>
-        <p class="brand">${product.brand}</p>
-        <p class="description">${product.desc}</p>
-        <span class="price">$${product.price.toFixed(2)}</span>
-      `;
-      container.appendChild(card);
+    function handleHashChange() {
+      const category = location.hash.replace("#", "") || "all";
+      renderProducts(category);
+    }
+
+    function editProduct(index) {
+      const p = products[index];
+      document.getElementById('editIndex').value = index;
+      document.getElementById('name').value = p.name;
+      document.getElementById('brand').value = p.brand;
+      document.getElementById('desc').value = p.desc;
+      document.getElementById('price').value = p.price;
+      document.getElementById('image').value = p.image;
+      document.getElementById('category').value = p.category;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function deleteProduct(index) {
+      if (confirm("Delete this product?")) {
+        products.splice(index, 1);
+        handleHashChange();
+      }
+    }
+
+    document.getElementById("product-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const brand = document.getElementById('brand').value.trim();
+      const desc = document.getElementById('desc').value.trim();
+      const price = parseFloat(document.getElementById('price').value);
+      const image = document.getElementById('image').value.trim();
+      const category = document.getElementById('category').value;
+      const index = document.getElementById('editIndex').value;
+
+      const product = { name, brand, desc, price, image, category };
+
+      if (index) {
+        products[index] = product;
+      } else {
+        products.push(product);
+      }
+
+      this.reset();
+      document.getElementById('editIndex').value = '';
+      handleHashChange();
     });
-  }
 
-  function handleHashChange() {
-    const category = location.hash.replace("#", "") || "all";
-    renderProducts(category);
-  }
-
-  window.addEventListener("hashchange", handleHashChange);
-  window.addEventListener("load", handleHashChange);
-</script>
-
+    window.addEventListener("hashchange", handleHashChange);
+    window.addEventListener("load", handleHashChange);
+  </script>
 </body>
 </html>
