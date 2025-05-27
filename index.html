@@ -29,38 +29,39 @@
   }
 
   #product-container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 24px;
-    max-width: 700px;
+    max-width: 1200px;
     margin: 0 auto 60px;
   }
 
   .product-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    background: #fff;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   .product-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   }
 
   .product-card img {
     width: 100%;
-    height: 180px;
-    border-radius: 10px;
+    height: 160px;
     object-fit: cover;
+    border-radius: 10px;
     margin-bottom: 12px;
   }
 
   .product-card h2 {
-    font-size: 1.1rem;
-    margin: 0 0 4px;
+    font-size: 1rem;
+    margin: 0 0 6px;
     color: #2c3e50;
   }
 
@@ -71,24 +72,24 @@
   }
 
   .description {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     color: #4b4b4b;
-    margin-bottom: 10px;
-    line-height: 1.5;
+    margin-bottom: auto;
+    line-height: 1.4;
   }
 
   .price {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: #20bf6b;
-    margin-bottom: 12px;
+    margin: 10px 0 0;
   }
 
   .product-card .btn {
-    display: inline-block;
-    margin-right: 10px;
+    margin-top: 10px;
+    margin-right: 6px;
     padding: 6px 12px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -132,7 +133,7 @@
   form button:hover {
     background: #1a252f;
   }
- </style>
+  </style>
 </head>
 <body>
 
