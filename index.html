@@ -159,3 +159,64 @@
     {
       name: "Disposable Vape 2g",
       brand: "Zap Bar",
+      desc: "Rechargeable and pre-filled with hybrid blend.",
+      price: 34.99,
+      image: "https://via.placeholder.com/300x160?text=Disposables",
+      category: "disposables"
+    },
+    {
+      name: "Top Shelf Bundle",
+      brand: "Variety Pack",
+      desc: "A curated mix of our best-selling products.",
+      price: 99.99,
+      image: "https://via.placeholder.com/300x160?text=Best+Sellers",
+      category: "best-sellers"
+    },
+    {
+      name: "Rolling Tray Kit",
+      brand: "RAW",
+      desc: "Includes tray, papers, tips and grinder.",
+      price: 19.99,
+      image: "https://via.placeholder.com/300x160?text=Misc",
+      category: "misc"
+    }
+  ];
+
+  function renderProducts(category = "all") {
+    const container = document.getElementById("product-container");
+    container.innerHTML = "";
+
+    const filtered = category === "all"
+      ? products
+      : products.filter(p => p.category === category);
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<p style="text-align:center; font-size:1rem;">No products in this category yet.</p>`;
+      return;
+    }
+
+    filtered.forEach(product => {
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.innerHTML = `
+        <img src="${product.image}" alt="${product.name}">
+        <h2>${product.name}</h2>
+        <p class="brand">${product.brand}</p>
+        <p class="description">${product.desc}</p>
+        <span class="price">$${product.price.toFixed(2)}</span>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function handleHashChange() {
+    const category = location.hash.replace("#", "") || "all";
+    renderProducts(category);
+  }
+
+  window.addEventListener("hashchange", handleHashChange);
+  window.addEventListener("load", handleHashChange);
+</script>
+
+</body>
+</html>
