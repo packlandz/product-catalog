@@ -1,354 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Catalog</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
   <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f8fafd;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-      display: flex;
-    }
-
-    main {
-      flex: 3;
-      padding-right: 20px;
-    }
-
-    aside#right-sidebar {
-      flex: 1;
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-      height: fit-content;
-    }
-
-    #search-bar {
-      margin-bottom: 20px;
-    }
-
-    #search-bar input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-
-    h1, h2 {
-      text-align: center;
-      font-weight: 500;
-      color: #1e272e;
-      margin-bottom: 20px;
-    }
-
-    #category-nav {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 30px;
-    }
-
-    #category-nav a {
-      text-decoration: none;
-      color: #2c3e50;
-      font-size: 0.9rem;
-      padding: 8px 14px;
-      border-radius: 6px;
-      background: #ecf0f1;
-      transition: background 0.2s ease;
-    }
-
-    #category-nav a:hover {
-      background: #dcdde1;
-    }
-
-    #product-container {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-    }
-
-    .product-card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 16px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .product-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    }
-
-    .product-card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-bottom: 12px;
-    }
-
-    .product-card h2 {
-      font-size: 1rem;
-      margin: 0 0 6px;
-      color: #2c3e50;
-    }
-
-    .brand {
-      font-size: 0.85rem;
-      color: #7f8c8d;
-      margin-bottom: 6px;
-    }
-
-    .description {
-      font-size: 0.88rem;
-      color: #4b4b4b;
-      margin-bottom: auto;
-      line-height: 1.4;
-    }
-
-    .price {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #20bf6b;
-      margin: 10px 0;
-    }
-
-    .btn {
-      margin-right: 6px;
-      padding: 6px 10px;
-      font-size: 0.75rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-    }
-
-    .btn.edit { background-color: #f39c12; }
-    .btn.delete { background-color: #e74c3c; }
-
-    form {
-      background: #fff;
-      max-width: 100%;
-      margin: 40px auto;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-    }
-
-    form input, form textarea, form select {
-      width: 100%;
-      padding: 10px 12px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 0.9rem;
-    }
-
-    form button {
-      background: #2c3e50;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
-
-    form button:hover {
-      background: #1a252f;
-    }
-  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
-<body>
-  <main>
-    <h1>Product Catalog</h1>
-    <nav id="category-nav">
-      <a href="#all">All</a>
-      <a href="#best-sellers">Best Sellers</a>
-      <a href="#flower">Flower</a>
-      <a href="#concentrates">Concentrates</a>
-      <a href="#carts">Carts</a>
-      <a href="#disposables">Disposables</a>
-      <a href="#edibles">Edibles</a>
-      <a href="#misc">Miscellaneous</a>
-    </nav>
+<body class="bg-gray-100">
+  <div class="flex">
+    <!-- Main content area -->
+    <div class="w-3/4 p-6">
+      <h1 class="text-3xl font-bold mb-4">Product Catalog</h1>
 
-    <div id="product-container"></div>
+      <!-- Quick Add Form -->
+      <form id="productForm" class="mb-6 space-y-2">
+        <input id="name" type="text" placeholder="Product Name" class="p-2 border rounded w-full" required>
+        <input id="price" type="number" step="0.01" placeholder="Price" class="p-2 border rounded w-full" required>
+        <input id="category" type="text" placeholder="Category" class="p-2 border rounded w-full" required>
+        <input id="image" type="text" placeholder="Image URL" class="p-2 border rounded w-full" required>
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded">Save Product</button>
+      </form>
 
-    <h2>Add / Edit Product</h2>
-    <form id="product-form">
-      <input type="hidden" id="editIndex" />
-      <input type="text" id="name" placeholder="Product Name" required />
-      <input type="text" id="brand" placeholder="Brand" required />
-      <textarea id="desc" placeholder="Description" required></textarea>
-      <input type="number" id="price" placeholder="Price" step="0.01" required />
-      <input type="text" id="image" placeholder="Image URL" required />
-      <select id="category" required>
-        <option value="">Select Category</option>
-        <option value="best-sellers">Best Sellers</option>
-        <option value="flower">Flower</option>
-        <option value="concentrates">Concentrates</option>
-        <option value="carts">Carts</option>
-        <option value="disposables">Disposables</option>
-        <option value="edibles">Edibles</option>
-        <option value="misc">Miscellaneous</option>
-      </select>
-      <button type="submit">Save Product</button>
-    </form>
-  </main>
-
-  <aside id="right-sidebar">
-    <div id="search-bar">
-      <input type="text" id="searchInput" placeholder="Search products...">
+      <!-- Products Grid -->
+      <div id="productsGrid" class="grid grid-cols-4 gap-4"></div>
     </div>
-    <h3>Stay Connected</h3>
-    <p>Join our Telegram channel for updates and offers!</p>
-    <a href="https://t.me/YOUR_CHANNEL_USERNAME" target="_blank"
-       style="display: inline-block; padding: 10px 16px; background-color: #0088cc; color: white; border-radius: 8px; text-decoration: none; font-weight: 500;">
-      Join on Telegram
-    </a>
-  </aside>
+
+    <!-- Sidebar -->
+    <div class="w-1/4 p-6 bg-white shadow-lg">
+      <div class="mb-4">
+        <input id="searchInput" type="text" placeholder="Search..." class="p-2 border rounded w-full">
+      </div>
+      <div>
+        <a href="https://t.me/yourchannel" target="_blank" class="text-blue-600 underline">Join our Telegram</a>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // 🔁 Replace these config values with your Firebase project’s real info:
-  apiKey: "AIzaSyAEd8f-5oB6FTQpp8upfhshAFkNiN6kl9s",
-  authDomain: "project-1323790434643229071.firebaseapp.com",
-  projectId: "project-1323790434643229071",
-  storageBucket: "project-1323790434643229071.firebasestorage.app",
-  messagingSenderId: "814516733876",
-  appId: "1:814516733876:web:a36b8e66d8cf07175394e1",
-  measurementId: "G-B8HK4636XQ"
-};
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAEd8f-5oB6FTQpp8upfhshAFkNiN6k1s",
+      authDomain: "project-1323790434643229071.firebaseapp.com",
+      projectId: "project-1323790434643229071",
+      storageBucket: "project-1323790434643229071.appspot.com",
+      messagingSenderId: "814516733876",
+      appId: "1:814516733876:web:a36b8e66d8cf07175394e1",
+      measurementId: "G-B8HK4636XQ"
+    };
 
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const productsRef = db.collection("products");
 
-    let products = [];
+    const form = document.getElementById("productForm");
+    const productsGrid = document.getElementById("productsGrid");
+    const searchInput = document.getElementById("searchInput");
 
-    function fetchProducts(category = "all", searchTerm = "") {
-      productsRef.get().then(snapshot => {
-        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        let filtered = category === "all"
-          ? products
-          : products.filter(p => p.category === category);
-
-        if (searchTerm) {
-          const lower = searchTerm.toLowerCase();
-          filtered = filtered.filter(p =>
-            p.name.toLowerCase().includes(lower) ||
-            p.brand.toLowerCase().includes(lower) ||
-            p.desc.toLowerCase().includes(lower)
-          );
-        }
-
-        renderProducts(filtered);
-      });
-    }
-
-    function renderProducts(list) {
-      const container = document.getElementById("product-container");
-      container.innerHTML = "";
-
-      if (list.length === 0) {
-        container.innerHTML = `<p style="text-align:center;">No products found.</p>`;
-        return;
-      }
-
-      list.forEach((product, index) => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <img src="${product.image}" alt="${product.name}">
-          <h2>${product.name}</h2>
-          <p class="brand">${product.brand}</p>
-          <p class="description">${product.desc}</p>
-          <span class="price">$${product.price.toFixed(2)}</span>
-          <div>
-            <button class="btn edit" onclick="editProduct(${index})">Edit</button>
-            <button class="btn delete" onclick="deleteProduct(${index})">Delete</button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function handleHashChange() {
-      const category = location.hash.replace("#", "") || "all";
-      const searchTerm = document.getElementById("searchInput").value.trim();
-      fetchProducts(category, searchTerm);
-    }
-
-    function editProduct(index) {
-      const p = products[index];
-      document.getElementById('editIndex').value = index;
-      document.getElementById('name').value = p.name;
-      document.getElementById('brand').value = p.brand;
-      document.getElementById('desc').value = p.desc;
-      document.getElementById('price').value = p.price;
-      document.getElementById('image').value = p.image;
-      document.getElementById('category').value = p.category;
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
-
-    function deleteProduct(index) {
-      const id = products[index].id;
-      if (confirm("Delete this product?")) {
-        productsRef.doc(id).delete().then(() => {
-          handleHashChange();
-        });
-      }
-    }
-
-    document.getElementById("product-form").addEventListener("submit", function(e) {
+    // Save product
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const brand = document.getElementById('brand').value.trim();
-      const desc = document.getElementById('desc').value.trim();
-      const price = parseFloat(document.getElementById('price').value);
-      const image = document.getElementById('image').value.trim();
-      const category = document.getElementById('category').value;
-      const index = document.getElementById('editIndex').value;
+      const name = document.getElementById("name").value;
+      const price = parseFloat(document.getElementById("price").value);
+      const category = document.getElementById("category").value;
+      const image = document.getElementById("image").value;
 
-      const product = { name, brand, desc, price, image, category };
-
-      if (index) {
-        const id = products[index].id;
-        productsRef.doc(id).set(product).then(() => {
-          this.reset();
-          document.getElementById('editIndex').value = '';
-          handleHashChange();
-        });
-      } else {
-        productsRef.add(product).then(() => {
-          this.reset();
-          document.getElementById('editIndex').value = '';
-          handleHashChange();
-        });
+      try {
+        await db.collection("products").add({ name, price, category, image });
+        form.reset();
+        loadProducts();
+      } catch (error) {
+        console.error("Error adding product:", error);
       }
     });
 
-    document.getElementById("searchInput").addEventListener("input", handleHashChange);
-    window.addEventListener("hashchange", handleHashChange);
-    window.addEventListener("load", handleHashChange);
+    // Load products from Firestore
+    async function loadProducts(queryText = "") {
+      productsGrid.innerHTML = "";
+      let snapshot;
+      if (queryText) {
+        snapshot = await db.collection("products").where("name", ">=", queryText).where("name", "<=", queryText + "\uf8ff").get();
+      } else {
+        snapshot = await db.collection("products").get();
+      }
+      snapshot.forEach((doc) => {
+        const product = doc.data();
+        const card = document.createElement("div");
+        card.className = "bg-white p-4 shadow rounded";
+        card.innerHTML = `
+          <img src="${product.image}" alt="${product.name}" class="w-full h-32 object-cover rounded">
+          <h2 class="font-bold text-lg mt-2">${product.name}</h2>
+          <p class="text-gray-600">${product.category}</p>
+          <p class="text-blue-500 font-semibold">$${product.price.toFixed(2)}</p>
+        `;
+        productsGrid.appendChild(card);
+      });
+    }
+
+    // Initial load
+    loadProducts();
+
+    // Search
+    searchInput.addEventListener("input", (e) => {
+      loadProducts(e.target.value);
+    });
   </script>
 </body>
 </html>
