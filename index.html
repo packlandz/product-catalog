@@ -3,236 +3,159 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Product Catalog with Admin</title>
-
-  <!-- Optional Font -->
+  <title>Product Catalog by Category</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
-  * {
-    box-sizing: border-box;
-  }
+    * { box-sizing: border-box; }
 
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: #f8fafd;
-    margin: 0;
-    padding: 30px 20px;
-    color: #333;
-  }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f8fafd;
+      margin: 0;
+      padding: 30px 20px;
+      color: #333;
+    }
 
-  h1, h2 {
-    text-align: center;
-    font-weight: 500;
-    color: #1e272e;
-    margin-bottom: 30px;
-  }
+    h1 {
+      text-align: center;
+      font-weight: 500;
+      color: #1e272e;
+      margin-bottom: 20px;
+    }
 
-  #product-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 24px;
-    max-width: 1200px;
-    margin: 0 auto 60px;
-  }
+    #category-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 0 auto 30px;
+      max-width: 900px;
+    }
 
-  .product-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 16px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
+    #category-nav a {
+      text-decoration: none;
+      color: #2c3e50;
+      font-size: 0.9rem;
+      padding: 8px 14px;
+      border-radius: 6px;
+      background: #ecf0f1;
+      transition: background 0.2s ease;
+    }
 
-  .product-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  }
+    #category-nav a:hover {
+      background: #dcdde1;
+    }
 
-  .product-card img {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 12px;
-  }
+    #product-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto 60px;
+    }
 
-  .product-card h2 {
-    font-size: 1rem;
-    margin: 0 0 6px;
-    color: #2c3e50;
-  }
+    .product-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-  .brand {
-    font-size: 0.85rem;
-    color: #7f8c8d;
-    margin-bottom: 6px;
-  }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
 
-  .description {
-    font-size: 0.88rem;
-    color: #4b4b4b;
-    margin-bottom: auto;
-    line-height: 1.4;
-  }
+    .product-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
 
-  .price {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #20bf6b;
-    margin: 10px 0 0;
-  }
+    .product-card h2 {
+      font-size: 1rem;
+      margin: 0 0 6px;
+      color: #2c3e50;
+    }
 
-  .product-card .btn {
-    margin-top: 10px;
-    margin-right: 6px;
-    padding: 6px 12px;
-    font-size: 0.75rem;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    color: white;
-    background-color: #3498db;
-    transition: background 0.2s ease;
-  }
+    .brand {
+      font-size: 0.85rem;
+      color: #7f8c8d;
+      margin-bottom: 6px;
+    }
 
-  .btn.edit { background-color: #f39c12; }
-  .btn.delete { background-color: #e74c3c; }
-  .btn:hover { filter: brightness(0.95); }
+    .description {
+      font-size: 0.88rem;
+      color: #4b4b4b;
+      margin-bottom: auto;
+      line-height: 1.4;
+    }
 
-  form {
-    background: #fff;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  }
-
-  form input, form textarea {
-    width: 100%;
-    padding: 10px 12px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 0.9rem;
-  }
-
-  form button {
-    background: #2c3e50;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    cursor: pointer;
-  }
-
-  form button:hover {
-    background: #1a252f;
-  }
+    .price {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #20bf6b;
+      margin: 10px 0 0;
+    }
   </style>
 </head>
 <body>
 
 <h1>Product Catalog</h1>
+
+<nav id="category-nav">
+  <a href="#all">All</a>
+  <a href="#best-sellers">Best Sellers</a>
+  <a href="#flower">Flower</a>
+  <a href="#concentrates">Concentrates</a>
+  <a href="#carts">Carts</a>
+  <a href="#disposables">Disposables</a>
+  <a href="#edibles">Edibles</a>
+  <a href="#misc">Miscellaneous</a>
+</nav>
+
 <div id="product-container"></div>
 
-<h2>Add / Edit Product</h2>
-<form id="product-form">
-  <input type="hidden" id="editIndex" />
-  <input type="text" id="name" placeholder="Product Name" required />
-  <input type="text" id="brand" placeholder="Brand" />
-  <textarea id="desc" placeholder="Description" required></textarea>
-  <input type="number" id="price" placeholder="Price" step="0.01" required />
-  <input type="text" id="image" placeholder="Image URL" required />
-  <button type="submit">Save Product</button>
-</form>
-
 <script>
-  let products = [
+  const products = [
     {
-      name: "Drew Martin Pre-Roll",
-      brand: "Drew Martin",
-      desc: "Authentic<br>Variety of Flavors<br>Fast Shipping",
-      price: 7.99,
-      image: "https://via.placeholder.com/300x220?text=Pre-Roll"
+      name: "Lyfted Flower 3.5g",
+      brand: "Lyfted Farms",
+      desc: "Indoor, premium quality prepack flower.",
+      price: 29.99,
+      image: "https://via.placeholder.com/300x160?text=Flower",
+      category: "flower"
     },
     {
-      name: "Lyfted Farm's Heads Up Pro Tree",
-      brand: "Lyfted Farm",
-      desc: "Indoor CAT 3<br>3.5 Prepackaged Flower<br>Fast Shipping",
-      price: 13.99,
-      image: "https://via.placeholder.com/300x220?text=Heads+Up+Pro"
-    }
-  ];
-
-  function renderProducts() {
-    const container = document.getElementById('product-container');
-    container.innerHTML = '';
-
-    products.forEach((product, index) => {
-      const card = document.createElement('div');
-      card.className = 'product-card';
-      card.innerHTML = `
-        <img src="${product.image}" alt="${product.name}">
-        <h2>${product.name}</h2>
-        <p class="brand">${product.brand}</p>
-        <p class="description">${product.desc}</p>
-        <span class="price">$${product.price.toFixed(2)}</span>
-        <div>
-          <button class="btn edit" onclick="editProduct(${index})">Edit</button>
-          <button class="btn delete" onclick="deleteProduct(${index})">Delete</button>
-        </div>
-      `;
-      container.appendChild(card);
-    });
-  }
-
-  function editProduct(index) {
-    const product = products[index];
-    document.getElementById('editIndex').value = index;
-    document.getElementById('name').value = product.name;
-    document.getElementById('brand').value = product.brand;
-    document.getElementById('desc').value = product.desc.replace(/<br>/g, '\n');
-    document.getElementById('price').value = product.price;
-    document.getElementById('image').value = product.image;
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-  }
-
-  function deleteProduct(index) {
-    if (confirm('Are you sure you want to delete this product?')) {
-      products.splice(index, 1);
-      renderProducts();
-    }
-  }
-
-  document.getElementById('product-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const name = document.getElementById('name').value.trim();
-    const brand = document.getElementById('brand').value.trim();
-    const desc = document.getElementById('desc').value.trim().replace(/\n/g, '<br>');
-    const price = parseFloat(document.getElementById('price').value);
-    const image = document.getElementById('image').value.trim();
-    const index = document.getElementById('editIndex').value;
-
-    const newProduct = { name, brand, desc, price, image };
-
-    if (index) {
-      products[index] = newProduct;
-    } else {
-      products.push(newProduct);
-    }
-
-    this.reset();
-    document.getElementById('editIndex').value = '';
-    renderProducts();
-  });
-
-  renderProducts();
-</script>
-
-</body>
-</html>
+      name: "Delta 9 Gummies",
+      brand: "Happy Treats",
+      desc: "Delicious 25mg THC-infused gummies.",
+      price: 14.99,
+      image: "https://via.placeholder.com/300x160?text=Edibles",
+      category: "edibles"
+    },
+    {
+      name: "Cloud Fuel Cart 1g",
+      brand: "Cloud Fuel",
+      desc: "Premium live resin vape cartridge.",
+      price: 39.99,
+      image: "https://via.placeholder.com/300x160?text=Carts",
+      category: "carts"
+    },
+    {
+      name: "Rosin Dab Jar",
+      brand: "Gold Drop",
+      desc: "High potency cold-pressed rosin concentrate.",
+      price: 49.99,
+      image: "https://via.placeholder.com/300x160?text=Concentrates",
+      category: "concentrates"
+    },
+    {
+      name: "Disposable Vape 2g",
+      brand: "Zap Bar",
