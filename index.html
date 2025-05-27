@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Product Catalog with Tabs & Admin</title>
+  <title>Product Catalog with Pagination</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
@@ -44,7 +44,7 @@
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 24px;
       max-width: 1200px;
-      margin: 0 auto 60px;
+      margin: 0 auto 30px;
     }
     .product-card {
       background: #fff;
@@ -127,6 +127,31 @@
     form button:hover {
       background: #1a252f;
     }
+    #pagination {
+      text-align: center;
+      margin-top: 20px;
+    }
+    #pagination button {
+      margin: 0 5px;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      background: #ecf0f1;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    #pagination button:hover {
+      background: #dcdde1;
+    }
+    #pagination button.active {
+      background: #2c3e50;
+      color: white;
+      font-weight: bold;
+    }
+    #pagination button:disabled {
+      background: #bdc3c7;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -143,6 +168,7 @@
   </nav>
 
   <div id="product-container"></div>
+  <div id="pagination"></div>
 
   <h2>Add / Edit Product</h2>
   <form id="product-form">
@@ -167,8 +193,10 @@
 
   <script>
     let products = [];
+    let currentPage = 1;
+    const PRODUCTS_PER_PAGE = 16;
 
-    function renderProducts(category = "all") {
+    function renderProducts(category = "all", page = 1) {
       const container = document.getElementById("product-container");
       container.innerHTML = "";
 
@@ -178,10 +206,18 @@
 
       if (filtered.length === 0) {
         container.innerHTML = `<p style="text-align:center;">No products in this category.</p>`;
+        document.getElementById("pagination").innerHTML = "";
         return;
       }
 
-      filtered.forEach((product, index) => {
+      const totalPages = Math.ceil(filtered.length / PRODUCTS_PER_PAGE);
+      currentPage = Math.min(Math.max(1, page), totalPages);
+      const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
+      const end = start + PRODUCTS_PER_PAGE;
+      const paginated = filtered.slice(start, end);
+
+      paginated.forEach((product, index) => {
+        const realIndex = products.indexOf(filtered[start + index]);
         const card = document.createElement("div");
         card.className = "product-card";
         card.innerHTML = `
@@ -191,17 +227,52 @@
           <p class="description">${product.desc}</p>
           <span class="price">$${product.price.toFixed(2)}</span>
           <div>
-            <button class="btn edit" onclick="editProduct(${index})">Edit</button>
-            <button class="btn delete" onclick="deleteProduct(${index})">Delete</button>
+            <button class="btn edit" onclick="editProduct(${realIndex})">Edit</button>
+            <button class="btn delete" onclick="deleteProduct(${realIndex})">Delete</button>
           </div>
         `;
         container.appendChild(card);
       });
+
+      renderPaginationControls(totalPages);
+    }
+
+    function renderPaginationControls(totalPages) {
+      const paginationEl = document.getElementById("pagination");
+      paginationEl.innerHTML = "";
+
+      if (totalPages <= 1) return;
+
+      const prevBtn = document.createElement("button");
+      prevBtn.textContent = "Prev";
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.onclick = () => changePage(currentPage - 1);
+      paginationEl.appendChild(prevBtn);
+
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        btn.className = i === currentPage ? "active" : "";
+        btn.onclick = () => changePage(i);
+        paginationEl.appendChild(btn);
+      }
+
+      const nextBtn = document.createElement("button");
+      nextBtn.textContent = "Next";
+      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.onclick = () => changePage(currentPage + 1);
+      paginationEl.appendChild(nextBtn);
+    }
+
+    function changePage(page) {
+      const category = location.hash.replace("#", "") || "all";
+      renderProducts(category, page);
     }
 
     function handleHashChange() {
+      currentPage = 1;
       const category = location.hash.replace("#", "") || "all";
-      renderProducts(category);
+      renderProducts(category, currentPage);
     }
 
     function editProduct(index) {
