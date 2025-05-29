@@ -319,32 +319,44 @@
     }
 
     document.getElementById("product-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const brand = document.getElementById('brand').value.trim();
-      const desc = document.getElementById('desc').value.trim();
-      const price = parseFloat(document.getElementById('price').value);
-      const image = document.getElementById('image').value.trim();
-      const category = document.getElementById('category').value;
-      const index = document.getElementById('editIndex').value;
+  e.preventDefault();
 
-      const product = { name, brand, desc, price, image, category };
+  const name = document.getElementById('name').value.trim();
+  const brand = document.getElementById('brand').value.trim();
+  const desc = document.getElementById('desc').value.trim();
+  const price = parseFloat(document.getElementById('price').value);
+  const image = document.getElementById('image').value.trim();
+  const category = document.getElementById('category').value;
+  const index = document.getElementById('editIndex').value;
 
-      if (index) {
-        const id = products[index].id;
-        productsRef.doc(id).set(product).then(() => {
-          this.reset();
-          document.getElementById('editIndex').value = '';
-          handleHashChange();
-        });
-      } else {
-        productsRef.add(product).then(() => {
-          this.reset();
-          document.getElementById('editIndex').value = '';
-          handleHashChange();
-        });
-      }
+  if (!name || !brand || !desc || isNaN(price) || !image || !category) {
+    alert("Please fill in all fields and enter a valid price.");
+    return;
+  }
+
+  const product = { name, brand, desc, price, image, category };
+
+  if (index) {
+    const id = products[index].id;
+    productsRef.doc(id).set(product).then(() => {
+      this.reset();
+      document.getElementById('editIndex').value = '';
+      handleHashChange();
+    }).catch(err => {
+      console.error("Error updating product:", err);
+      alert("Failed to update product.");
     });
+  } else {
+    productsRef.add(product).then(() => {
+      this.reset();
+      document.getElementById('editIndex').value = '';
+      handleHashChange();
+    }).catch(err => {
+      console.error("Error adding product:", err);
+      alert("Failed to add product.");
+    });
+  }
+});
 
     document.getElementById("searchInput").addEventListener("input", handleHashChange);
     window.addEventListener("hashchange", handleHashChange);
