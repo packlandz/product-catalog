@@ -2,252 +2,216 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Product Catalog</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
-      background: #f9f9f9;
-      color: #333;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
     }
-
-    h1 {
+    header {
+      background-color: #111;
+      color: white;
+      padding: 1rem;
       text-align: center;
-      margin-top: 30px;
-      font-size: 2em;
     }
-
-    .tabs {
-      text-align: center;
-      margin: 20px 0;
-    }
-
-    .tabs a {
-      margin: 0 10px;
-      text-decoration: none;
-      color: #007bff;
-      font-weight: bold;
-    }
-
-    .tabs a:hover {
-      text-decoration: underline;
-    }
-
     .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
-      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .tab {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .sidebar {
+      background: white;
+      padding: 1rem;
+      margin-top: 2rem;
+      width: 300px;
+      border: 1px solid #ddd;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-
-    .search-bar {
-      margin-bottom: 20px;
-      text-align: center;
+    .form-group {
+      margin-bottom: 1rem;
     }
-
-    .search-bar input {
-      width: 60%;
-      padding: 10px;
-      border-radius: 6px;
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 600px;
+    }
+    .product {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
       border: 1px solid #ccc;
     }
-
-    .product-list {
-      margin-top: 20px;
-    }
-
-    .product {
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
     .product img {
-      max-height: 80px;
-      max-width: 80px;
-      object-fit: contain;
-      margin-right: 15px;
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
     }
-
     .product-info {
       flex: 1;
     }
-
-    .product-actions button {
-      margin-left: 10px;
-      padding: 5px 10px;
-      border: none;
-      background: #007bff;
-      color: #fff;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .product-actions button.delete {
-      background: #dc3545;
-    }
-
-    .form-section {
-      margin-top: 40px;
-    }
-
-    .form-section h2 {
-      text-align: center;
-    }
-
-    .form-grid {
+    .product-actions {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 10px;
-    }
-
-    .form-grid input, .form-grid textarea, .form-grid select {
-      padding: 8px;
-      width: 200px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    .form-grid textarea {
-      height: 60px;
-    }
-
-    .form-grid button {
-      padding: 10px 20px;
-      background: #28a745;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .sidebar {
-      text-align: center;
-      margin: 50px auto 20px auto;
-      padding: 20px;
-      border-top: 1px solid #ddd;
-      max-width: 600px;
-    }
-
-    .sidebar p {
-      margin-bottom: 15px;
-    }
-
-    .sidebar a {
-      display: inline-block;
-      padding: 10px 20px;
-      background: #0088cc;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 6px;
-    }
-
-    .sidebar a:hover {
-      background: #0077b3;
-    }
-
-    @media (max-width: 600px) {
-      .form-grid input, .form-grid textarea, .form-grid select {
-        width: 100%;
-      }
-
-      .search-bar input {
-        width: 90%;
-      }
-
-      .product {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .product img {
-        margin-bottom: 10px;
-      }
-
-      .product-actions {
-        margin-top: 10px;
-      }
+      flex-direction: column;
+      gap: 0.5rem;
     }
   </style>
 </head>
 <body>
-
-  <h1>Product Catalog</h1>
-
-  <div class="tabs">
-    <a href="#">All</a>
-    <a href="#">Best Sellers</a>
-    <a href="#">Flower</a>
-    <a href="#">Concentrates</a>
-    <a href="#">Carts</a>
-    <a href="#">Disposables</a>
-    <a href="#">Edibles</a>
-    <a href="#">Miscellaneous</a>
-  </div>
-
+  <header>
+    <h1>Product Catalog</h1>
+  </header>
   <div class="container">
-
-    <div class="search-bar">
-      <input type="text" placeholder="Search products..." />
+    <div class="tabs">
+      <div class="tab">Best Sellers</div>
+      <div class="tab">Flower</div>
+      <div class="tab">Concentrates</div>
+      <div class="tab">Carts</div>
+      <div class="tab">Disposables</div>
+      <div class="tab">Edibles</div>
+      <div class="tab">Miscellaneous</div>
     </div>
 
-    <div class="product-list">
-      <!-- Example product (you will populate this with JS or Firebase data) -->
-      <!--
-      <div class="product">
-        <img src="https://via.placeholder.com/80" alt="Product Image">
-        <div class="product-info">
-          <strong>Product Name</strong><br>
-          Brand: ExampleBrand<br>
-          $19.99<br>
-          Best-selling category
-        </div>
-        <div class="product-actions">
-          <button>Edit</button>
-          <button class="delete">Delete</button>
-        </div>
-      </div>
-      -->
-      <p style="text-align: center;">No products found.</p>
-    </div>
-
-    <div class="form-section">
-      <h2>Add / Edit Product</h2>
-      <div class="form-grid">
+    <div class="sidebar">
+      <div class="form-group">
         <input type="text" placeholder="Product Name" />
-        <input type="text" placeholder="Brand" />
-        <textarea placeholder="Description"></textarea>
-        <input type="text" placeholder="Price" />
-        <input type="text" placeholder="Image URL" />
-        <select>
-          <option>Select Category</option>
-          <option>Best Sellers</option>
-          <option>Flower</option>
-          <option>Concentrates</option>
-          <option>Carts</option>
-          <option>Disposables</option>
-          <option>Edibles</option>
-          <option>Miscellaneous</option>
-        </select>
-        <button>Save Product</button>
       </div>
+      <div class="form-group">
+        <input type="text" placeholder="Brand" />
+      </div>
+      <div class="form-group">
+        <textarea placeholder="Description"></textarea>
+      </div>
+      <div class="form-group">
+        <input type="number" placeholder="Price" />
+      </div>
+      <div class="form-group">
+        <input type="text" placeholder="Image URL" />
+      </div>
+      <div class="form-group">
+        <select>
+          <option value="Best Sellers">Best Sellers</option>
+          <option value="Flower">Flower</option>
+          <option value="Concentrates">Concentrates</option>
+          <option value="Carts">Carts</option>
+          <option value="Disposables">Disposables</option>
+          <option value="Edibles">Edibles</option>
+          <option value="Miscellaneous">Miscellaneous</option>
+        </select>
+      </div>
+      <button onclick="handleSaveProduct()">Save Product</button>
     </div>
+
+    <div class="product-list"></div>
   </div>
 
-  <div class="sidebar">
-    <p>Join our Telegram channel for updates and offers!</p>
-    <a href="https://t.me/yourchannel" target="_blank">Join on Telegram</a>
-  </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function saveProduct(product) {
+      try {
+        await addDoc(collection(db, "products"), product);
+        alert("Product saved!");
+        fetchProducts();
+      } catch (error) {
+        console.error("Error saving product:", error);
+        alert("Failed to save product.");
+      }
+    }
+
+    async function fetchProducts() {
+      const productList = document.querySelector(".product-list");
+      productList.innerHTML = "";
+      try {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const productHTML = `
+            <div class="product">
+              <img src="${data.imageUrl || 'https://via.placeholder.com/80'}" alt="Product Image">
+              <div class="product-info">
+                <strong>${data.name}</strong><br>
+                Brand: ${data.brand}<br>
+                $${data.price}<br>
+                Category: ${data.category}
+              </div>
+              <div class="product-actions">
+                <button>Edit</button>
+                <button class="delete">Delete</button>
+              </div>
+            </div>
+          `;
+          productList.innerHTML += productHTML;
+        });
+        if (querySnapshot.empty) {
+          productList.innerHTML = "<p>No products found.</p>";
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        productList.innerHTML = "<p>Error loading products.</p>";
+      }
+    }
+
+    window.handleSaveProduct = async function () {
+      const name = document.querySelector('input[placeholder="Product Name"]').value.trim();
+      const brand = document.querySelector('input[placeholder="Brand"]').value.trim();
+      const description = document.querySelector('textarea[placeholder="Description"]').value.trim();
+      const price = parseFloat(document.querySelector('input[placeholder="Price"]').value.trim());
+      const imageUrl = document.querySelector('input[placeholder="Image URL"]').value.trim();
+      const category = document.querySelector("select").value;
+
+      if (!name || isNaN(price) || !category) {
+        alert("Please enter a valid product name, price, and category.");
+        return;
+      }
+
+      const product = { name, brand, description, price, imageUrl, category, createdAt: new Date() };
+      await saveProduct(product);
+    };
+
+    window.addEventListener("DOMContentLoaded", fetchProducts);
+  </script>
 </body>
 </html>
