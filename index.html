@@ -2,376 +2,208 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Product Catalog</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
   <style>
-    * { box-sizing: border-box; }
     body {
-      font-family: 'Poppins', sans-serif;
-      background: #f8fafd;
+      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
-      color: #333;
+      padding: 0;
       display: flex;
     }
 
     main {
       flex: 3;
-      padding-right: 20px;
-    }
-
-    aside#right-sidebar {
-      flex: 1;
-      background: #ffffff;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-      height: fit-content;
     }
 
-    #search-bar {
-      margin-bottom: 20px;
-    }
-
-    #search-bar input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+    #right-sidebar {
+      flex: 1;
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-left: 1px solid #ddd;
     }
 
     h1, h2 {
-      text-align: center;
-      font-weight: 500;
-      color: #1e272e;
-      margin-bottom: 20px;
-    }
-
-    #category-nav {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 30px;
+      margin: 0 0 15px;
     }
 
     #category-nav a {
-      text-decoration: none;
-      color: #2c3e50;
-      font-size: 0.9rem;
-      padding: 8px 14px;
-      border-radius: 6px;
-      background: #ecf0f1;
-      transition: background 0.2s ease;
+      margin-right: 10px;
     }
 
-    #category-nav a:hover {
-      background: #dcdde1;
+    #product-form input,
+    #product-form textarea,
+    #product-form select {
+      padding: 5px;
+      margin: 5px;
+    }
+
+    #product-form button {
+      padding: 5px 10px;
+      margin: 5px;
     }
 
     #product-container {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
     }
 
     .product-card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 16px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .product-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 200px;
     }
 
     .product-card img {
       width: 100%;
-      height: 160px;
+      height: 100px;
       object-fit: cover;
-      border-radius: 10px;
-      margin-bottom: 12px;
     }
 
-    .product-card h2 {
-      font-size: 1rem;
-      margin: 0 0 6px;
-      color: #2c3e50;
+    .product-card button {
+      margin-top: 5px;
     }
-
-    .brand {
-      font-size: 0.85rem;
-      color: #7f8c8d;
-      margin-bottom: 6px;
-    }
-
-    .description {
-      font-size: 0.88rem;
-      color: #4b4b4b;
-      margin-bottom: auto;
-      line-height: 1.4;
-    }
-
-    .price {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #20bf6b;
-      margin: 10px 0;
-    }
-
-    .btn {
-      margin-right: 6px;
-      padding: 6px 10px;
-      font-size: 0.75rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-    }
-
-    .btn.edit { background-color: #f39c12; }
-    .btn.delete { background-color: #e74c3c; }
-
-    form {
-      background: #fff;
-      max-width: 100%;
-      margin: 40px auto;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-    }
-
-    form input, form textarea, form select {
-      width: 100%;
-      padding: 10px 12px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 0.9rem;
-    }
-
-    form button {
-      background: #2c3e50;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
-
-    form button:hover {
-      background: #1a252f;
-    }
- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Product Catalog</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
-  <style>
+  </style>
 </head>
 <body>
   <main>
     <h1>Product Catalog</h1>
-    <nav id="category-nav">
-      <a href="#all">All</a>
-      <a href="#best-sellers">Best Sellers</a>
-      <a href="#flower">Flower</a>
-      <a href="#concentrates">Concentrates</a>
-      <a href="#carts">Carts</a>
-      <a href="#disposables">Disposables</a>
-      <a href="#edibles">Edibles</a>
-      <a href="#misc">Miscellaneous</a>
-    </nav>
 
-    <div id="product-container"></div>
+    <div id="category-nav">
+      <a href="#" onclick="filterByCategory('All')">All</a>
+      <a href="#" onclick="filterByCategory('Best Sellers')">Best Sellers</a>
+      <a href="#" onclick="filterByCategory('Flower')">Flower</a>
+      <a href="#" onclick="filterByCategory('Concentrates')">Concentrates</a>
+      <a href="#" onclick="filterByCategory('Carts')">Carts</a>
+      <a href="#" onclick="filterByCategory('Disposables')">Disposables</a>
+      <a href="#" onclick="filterByCategory('Edibles')">Edibles</a>
+      <a href="#" onclick="filterByCategory('Miscellaneous')">Miscellaneous</a>
+    </div>
+
+    <div id="product-container">
+      <p>No products found.</p>
+    </div>
 
     <h2>Add / Edit Product</h2>
     <form id="product-form">
-      <input type="hidden" id="editIndex" />
       <input type="text" id="name" placeholder="Product Name" required />
       <input type="text" id="brand" placeholder="Brand" required />
-      <textarea id="desc" placeholder="Description" required></textarea>
-      <input type="number" id="price" placeholder="Price" step="0.01" required />
-      <input type="text" id="image" placeholder="Image URL" required />
-      <select id="category" required>
+      <textarea id="description" placeholder="Description"></textarea>
+      <input type="number" id="price" placeholder="Price" required />
+      <input type="url" id="image" placeholder="Image URL" />
+      <select id="category">
         <option value="">Select Category</option>
-        <option value="best-sellers">Best Sellers</option>
-        <option value="flower">Flower</option>
-        <option value="concentrates">Concentrates</option>
-        <option value="carts">Carts</option>
-        <option value="disposables">Disposables</option>
-        <option value="edibles">Edibles</option>
-        <option value="misc">Miscellaneous</option>
+        <option value="Best Sellers">Best Sellers</option>
+        <option value="Flower">Flower</option>
+        <option value="Concentrates">Concentrates</option>
+        <option value="Carts">Carts</option>
+        <option value="Disposables">Disposables</option>
+        <option value="Edibles">Edibles</option>
+        <option value="Miscellaneous">Miscellaneous</option>
       </select>
       <button type="submit">Save Product</button>
     </form>
   </main>
 
-  <aside id="right-sidebar">
-    <div id="search-bar">
-      <input type="text" id="searchInput" placeholder="Search products...">
-    </div>
-    <h3>Stay Connected</h3>
+  <div id="right-sidebar">
+    <h2>Stay Connected</h2>
     <p>Join our Telegram channel for updates and offers!</p>
-    <a href="https://t.me/YOUR_CHANNEL_USERNAME" target="_blank"
-       style="display: inline-block; padding: 10px 16px; background-color: #0088cc; color: white; border-radius: 8px; text-decoration: none; font-weight: 500;">
-      Join on Telegram
+    <a href="https://t.me/yourchannel" target="_blank">
+      <button>Join on Telegram</button>
     </a>
-  </aside>
+
+    <div id="search-bar">
+      <input type="text" id="searchInput" placeholder="Search products..." />
+    </div>
+  </div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
-      authDomain: "project-3390921463634312663.firebaseapp.com",
-      projectId: "project-3390921463634312663",
-      storageBucket: "project-3390921463634312663.firebasestorage.app",
-      messagingSenderId: "451857573630",
-      appId: "1:451857573630:web:94f4ee25f65ef4967ae7af"
-    };
+    const productContainer = document.getElementById("product-container");
+    const searchInput = document.getElementById("searchInput");
+    const productForm = document.getElementById("product-form");
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const productsRef = db.collection("products");
-
+    // Replace with Firebase fetch if needed
     let products = [];
 
-    function fetchProducts(category = "all", searchTerm = "") {
-      productsRef.get().then(snapshot => {
-        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        let filtered = category === "all"
-          ? products
-          : products.filter(p => p.category === category);
-
-        if (searchTerm) {
-          const lower = searchTerm.toLowerCase();
-          filtered = filtered.filter(p =>
-            p.name.toLowerCase().includes(lower) ||
-            p.brand.toLowerCase().includes(lower) ||
-            p.desc.toLowerCase().includes(lower)
-          );
-        }
-
-        renderProducts(filtered);
-      });
-    }
-
-    function renderProducts(list) {
-      const container = document.getElementById("product-container");
-      container.innerHTML = "";
-
-      if (list.length === 0) {
-        container.innerHTML = `<p style="text-align:center;">No products found.</p>`;
+    function displayProducts(filteredProducts) {
+      productContainer.innerHTML = "";
+      if (filteredProducts.length === 0) {
+        productContainer.innerHTML = "<p>No products found.</p>";
         return;
       }
-
-      list.forEach((product, index) => {
+      filteredProducts.forEach(product => {
         const card = document.createElement("div");
         card.className = "product-card";
         card.innerHTML = `
-          <img src="${product.image}" alt="${product.name}">
-          <h2>${product.name}</h2>
-          <p class="brand">${product.brand}</p>
-          <p class="description">${product.desc}</p>
-          <span class="price">$${product.price.toFixed(2)}</span>
-          <div>
-            <button class="btn edit" onclick="editProduct(${index})">Edit</button>
-            <button class="btn delete" onclick="deleteProduct(${index})">Delete</button>
-          </div>
+          <img src="${product.image}" alt="${product.name}" />
+          <h3>${product.name}</h3>
+          <p><strong>Brand:</strong> ${product.brand}</p>
+          <p>${product.description}</p>
+          <p><strong>Price:</strong> $${product.price}</p>
+          <p><strong>Category:</strong> ${product.category}</p>
         `;
-        container.appendChild(card);
+        productContainer.appendChild(card);
       });
     }
 
-    function handleHashChange() {
-      const category = location.hash.replace("#", "") || "all";
-      const searchTerm = document.getElementById("searchInput").value.trim();
-      fetchProducts(category, searchTerm);
-    }
-
-    function editProduct(index) {
-      const p = products[index];
-      document.getElementById('editIndex').value = index;
-      document.getElementById('name').value = p.name;
-      document.getElementById('brand').value = p.brand;
-      document.getElementById('desc').value = p.desc;
-      document.getElementById('price').value = p.price;
-      document.getElementById('image').value = p.image;
-      document.getElementById('category').value = p.category;
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
-
-    function deleteProduct(index) {
-      const id = products[index].id;
-      if (confirm("Delete this product?")) {
-        productsRef.doc(id).delete().then(() => {
-          handleHashChange();
-        });
-      }
-    }
-
-    document.getElementById("product-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      const name = document.getElementById('name').value.trim();
-      const brand = document.getElementById('brand').value.trim();
-      const desc = document.getElementById('desc').value.trim();
-      const price = parseFloat(document.getElementById('price').value);
-      const image = document.getElementById('image').value.trim();
-      const category = document.getElementById('category').value;
-      const index = document.getElementById('editIndex').value;
-
-      if (!name || !brand || !desc || isNaN(price) || !image || !category) {
-        alert("Please fill in all fields and enter a valid price.");
-        return;
-      }
-
-      const product = { name, brand, desc, price, image, category };
-
-      if (index) {
-        const id = products[index].id;
-        productsRef.doc(id).set(product).then(() => {
-          this.reset();
-          document.getElementById('editIndex').value = '';
-          handleHashChange();
-        }).catch(err => {
-          console.error("Error updating product:", err);
-          alert("Failed to update product.");
-        });
+    function filterByCategory(category) {
+      if (category === 'All') {
+        displayProducts(products);
       } else {
-        productsRef.add(product).then(() => {
-          this.reset();
-          document.getElementById('editIndex').value = '';
-          handleHashChange();
-        }).catch(err => {
-          console.error("Error adding product:", err);
-          alert("Failed to add product.");
-        });
+        const filtered = products.filter(p => p.category === category);
+        displayProducts(filtered);
       }
+    }
+
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.toLowerCase();
+      const filtered = products.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.brand.toLowerCase().includes(query) ||
+        p.description.toLowerCase().includes(query)
+      );
+      displayProducts(filtered);
     });
 
-    document.getElementById("searchInput").addEventListener("input", handleHashChange);
-    window.addEventListener("hashchange", handleHashChange);
-    window.addEventListener("load", handleHashChange);
+    productForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const newProduct = {
+        name: document.getElementById("name").value,
+        brand: document.getElementById("brand").value,
+        description: document.getElementById("description").value,
+        price: document.getElementById("price").value,
+        image: document.getElementById("image").value,
+        category: document.getElementById("category").value,
+      };
+      products.push(newProduct);
+      displayProducts(products);
+      productForm.reset();
+    });
+
+    // Initial dummy data (remove when using Firebase)
+    products = [
+      {
+        name: "Pineapple Express",
+        brand: "Dank Co",
+        description: "Hybrid strain great for daytime use.",
+        price: 35,
+        image: "https://via.placeholder.com/150",
+        category: "Carts"
+      },
+      {
+        name: "OG Kush",
+        brand: "Herbal Co",
+        description: "Classic indica strain.",
+        price: 30,
+        image: "https://via.placeholder.com/150",
+        category: "Flower"
+      }
+    ];
+
+    displayProducts(products);
   </script>
 </body>
 </html>
