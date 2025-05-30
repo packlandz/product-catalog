@@ -2,208 +2,252 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Product Catalog</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      display: flex;
+      background: #f9f9f9;
+      color: #333;
     }
 
-    main {
-      flex: 3;
+    h1 {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 2em;
+    }
+
+    .tabs {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .tabs a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+    }
+
+    .tabs a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
       padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
 
-    #right-sidebar {
-      flex: 1;
-      background-color: #f9f9f9;
-      padding: 20px;
-      border-left: 1px solid #ddd;
+    .search-bar {
+      margin-bottom: 20px;
+      text-align: center;
     }
 
-    h1, h2 {
-      margin: 0 0 15px;
+    .search-bar input {
+      width: 60%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
 
-    #category-nav a {
-      margin-right: 10px;
-    }
-
-    #product-form input,
-    #product-form textarea,
-    #product-form select {
-      padding: 5px;
-      margin: 5px;
-    }
-
-    #product-form button {
-      padding: 5px 10px;
-      margin: 5px;
-    }
-
-    #product-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
+    .product-list {
       margin-top: 20px;
     }
 
-    .product-card {
-      border: 1px solid #ccc;
+    .product {
+      border: 1px solid #ddd;
+      border-radius: 6px;
       padding: 10px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .product img {
+      max-height: 80px;
+      max-width: 80px;
+      object-fit: contain;
+      margin-right: 15px;
+    }
+
+    .product-info {
+      flex: 1;
+    }
+
+    .product-actions button {
+      margin-left: 10px;
+      padding: 5px 10px;
+      border: none;
+      background: #007bff;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .product-actions button.delete {
+      background: #dc3545;
+    }
+
+    .form-section {
+      margin-top: 40px;
+    }
+
+    .form-section h2 {
+      text-align: center;
+    }
+
+    .form-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .form-grid input, .form-grid textarea, .form-grid select {
+      padding: 8px;
       width: 200px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
 
-    .product-card img {
-      width: 100%;
-      height: 100px;
-      object-fit: cover;
+    .form-grid textarea {
+      height: 60px;
     }
 
-    .product-card button {
-      margin-top: 5px;
+    .form-grid button {
+      padding: 10px 20px;
+      background: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .sidebar {
+      text-align: center;
+      margin: 50px auto 20px auto;
+      padding: 20px;
+      border-top: 1px solid #ddd;
+      max-width: 600px;
+    }
+
+    .sidebar p {
+      margin-bottom: 15px;
+    }
+
+    .sidebar a {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #0088cc;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+
+    .sidebar a:hover {
+      background: #0077b3;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid input, .form-grid textarea, .form-grid select {
+        width: 100%;
+      }
+
+      .search-bar input {
+        width: 90%;
+      }
+
+      .product {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .product img {
+        margin-bottom: 10px;
+      }
+
+      .product-actions {
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <main>
-    <h1>Product Catalog</h1>
 
-    <div id="category-nav">
-      <a href="#" onclick="filterByCategory('All')">All</a>
-      <a href="#" onclick="filterByCategory('Best Sellers')">Best Sellers</a>
-      <a href="#" onclick="filterByCategory('Flower')">Flower</a>
-      <a href="#" onclick="filterByCategory('Concentrates')">Concentrates</a>
-      <a href="#" onclick="filterByCategory('Carts')">Carts</a>
-      <a href="#" onclick="filterByCategory('Disposables')">Disposables</a>
-      <a href="#" onclick="filterByCategory('Edibles')">Edibles</a>
-      <a href="#" onclick="filterByCategory('Miscellaneous')">Miscellaneous</a>
+  <h1>Product Catalog</h1>
+
+  <div class="tabs">
+    <a href="#">All</a>
+    <a href="#">Best Sellers</a>
+    <a href="#">Flower</a>
+    <a href="#">Concentrates</a>
+    <a href="#">Carts</a>
+    <a href="#">Disposables</a>
+    <a href="#">Edibles</a>
+    <a href="#">Miscellaneous</a>
+  </div>
+
+  <div class="container">
+
+    <div class="search-bar">
+      <input type="text" placeholder="Search products..." />
     </div>
 
-    <div id="product-container">
-      <p>No products found.</p>
+    <div class="product-list">
+      <!-- Example product (you will populate this with JS or Firebase data) -->
+      <!--
+      <div class="product">
+        <img src="https://via.placeholder.com/80" alt="Product Image">
+        <div class="product-info">
+          <strong>Product Name</strong><br>
+          Brand: ExampleBrand<br>
+          $19.99<br>
+          Best-selling category
+        </div>
+        <div class="product-actions">
+          <button>Edit</button>
+          <button class="delete">Delete</button>
+        </div>
+      </div>
+      -->
+      <p style="text-align: center;">No products found.</p>
     </div>
 
-    <h2>Add / Edit Product</h2>
-    <form id="product-form">
-      <input type="text" id="name" placeholder="Product Name" required />
-      <input type="text" id="brand" placeholder="Brand" required />
-      <textarea id="description" placeholder="Description"></textarea>
-      <input type="number" id="price" placeholder="Price" required />
-      <input type="url" id="image" placeholder="Image URL" />
-      <select id="category">
-        <option value="">Select Category</option>
-        <option value="Best Sellers">Best Sellers</option>
-        <option value="Flower">Flower</option>
-        <option value="Concentrates">Concentrates</option>
-        <option value="Carts">Carts</option>
-        <option value="Disposables">Disposables</option>
-        <option value="Edibles">Edibles</option>
-        <option value="Miscellaneous">Miscellaneous</option>
-      </select>
-      <button type="submit">Save Product</button>
-    </form>
-  </main>
-
-  <div id="right-sidebar">
-    <h2>Stay Connected</h2>
-    <p>Join our Telegram channel for updates and offers!</p>
-    <a href="https://t.me/yourchannel" target="_blank">
-      <button>Join on Telegram</button>
-    </a>
-
-    <div id="search-bar">
-      <input type="text" id="searchInput" placeholder="Search products..." />
+    <div class="form-section">
+      <h2>Add / Edit Product</h2>
+      <div class="form-grid">
+        <input type="text" placeholder="Product Name" />
+        <input type="text" placeholder="Brand" />
+        <textarea placeholder="Description"></textarea>
+        <input type="text" placeholder="Price" />
+        <input type="text" placeholder="Image URL" />
+        <select>
+          <option>Select Category</option>
+          <option>Best Sellers</option>
+          <option>Flower</option>
+          <option>Concentrates</option>
+          <option>Carts</option>
+          <option>Disposables</option>
+          <option>Edibles</option>
+          <option>Miscellaneous</option>
+        </select>
+        <button>Save Product</button>
+      </div>
     </div>
   </div>
 
-  <script>
-    const productContainer = document.getElementById("product-container");
-    const searchInput = document.getElementById("searchInput");
-    const productForm = document.getElementById("product-form");
+  <div class="sidebar">
+    <p>Join our Telegram channel for updates and offers!</p>
+    <a href="https://t.me/yourchannel" target="_blank">Join on Telegram</a>
+  </div>
 
-    // Replace with Firebase fetch if needed
-    let products = [];
-
-    function displayProducts(filteredProducts) {
-      productContainer.innerHTML = "";
-      if (filteredProducts.length === 0) {
-        productContainer.innerHTML = "<p>No products found.</p>";
-        return;
-      }
-      filteredProducts.forEach(product => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <img src="${product.image}" alt="${product.name}" />
-          <h3>${product.name}</h3>
-          <p><strong>Brand:</strong> ${product.brand}</p>
-          <p>${product.description}</p>
-          <p><strong>Price:</strong> $${product.price}</p>
-          <p><strong>Category:</strong> ${product.category}</p>
-        `;
-        productContainer.appendChild(card);
-      });
-    }
-
-    function filterByCategory(category) {
-      if (category === 'All') {
-        displayProducts(products);
-      } else {
-        const filtered = products.filter(p => p.category === category);
-        displayProducts(filtered);
-      }
-    }
-
-    searchInput.addEventListener("input", () => {
-      const query = searchInput.value.toLowerCase();
-      const filtered = products.filter(p =>
-        p.name.toLowerCase().includes(query) ||
-        p.brand.toLowerCase().includes(query) ||
-        p.description.toLowerCase().includes(query)
-      );
-      displayProducts(filtered);
-    });
-
-    productForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const newProduct = {
-        name: document.getElementById("name").value,
-        brand: document.getElementById("brand").value,
-        description: document.getElementById("description").value,
-        price: document.getElementById("price").value,
-        image: document.getElementById("image").value,
-        category: document.getElementById("category").value,
-      };
-      products.push(newProduct);
-      displayProducts(products);
-      productForm.reset();
-    });
-
-    // Initial dummy data (remove when using Firebase)
-    products = [
-      {
-        name: "Pineapple Express",
-        brand: "Dank Co",
-        description: "Hybrid strain great for daytime use.",
-        price: 35,
-        image: "https://via.placeholder.com/150",
-        category: "Carts"
-      },
-      {
-        name: "OG Kush",
-        brand: "Herbal Co",
-        description: "Classic indica strain.",
-        price: 30,
-        image: "https://via.placeholder.com/150",
-        category: "Flower"
-      }
-    ];
-
-    displayProducts(products);
-  </script>
 </body>
 </html>
