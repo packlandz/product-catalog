@@ -2,144 +2,145 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Product Catalog</title>
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-  }
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
 
-  header {
-    background-color: #111;
-    color: white;
-    padding: 1rem;
-    text-align: center;
-  }
+    header {
+      background-color: #111;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
 
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem;
-  }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
 
-  .tabs {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
 
-  .tab {
-    background: white;
-    border: 1px solid #ddd;
-    padding: 0.5rem 1.2rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
+    .tab {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 0.5rem 1.2rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-  .tab.active {
-    background-color: #111;
-    color: white;
-  }
+    .tab.active {
+      background-color: #111;
+      color: white;
+    }
 
-  .sidebar {
-    background: white;
-    padding: 1rem;
-    margin-top: 2rem;
-    width: 300px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-  }
+    .sidebar {
+      background: white;
+      padding: 1rem;
+      margin-top: 2rem;
+      width: 300px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
 
-  .form-group {
-    margin-bottom: 1rem;
-  }
+    .form-group {
+      margin-bottom: 1rem;
+    }
 
-  .form-group input,
-  .form-group textarea,
-  .form-group select {
-    width: 100%;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-  }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
 
-  .product-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-    width: 100%;
-    max-width: 1200px;
-    padding: 1rem;
-  }
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 1200px;
+      padding: 1rem;
+    }
 
-  .product {
-    background: white;
-    padding: 1rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.2s ease;
-  }
+    .product {
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s ease;
+    }
 
-  .product:hover {
-    transform: translateY(-5px);
-  }
+    .product:hover {
+      transform: translateY(-5px);
+    }
 
-  .product img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 0.75rem;
-  }
+    .product img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+    }
 
-  .product-info {
-    text-align: center;
-    font-size: 0.95rem;
-    color: #333;
-  }
+    .product-info {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #333;
+    }
 
-  .product-info strong {
-    display: block;
-    font-size: 1.1rem;
-    margin-bottom: 0.3rem;
-  }
+    .product-info strong {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+    }
 
-  .product-actions {
-    margin-top: 0.75rem;
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-  }
+    .product-actions {
+      margin-top: 0.75rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+    }
 
-  .product-actions button {
-    background: #111;
-    color: white;
-    border: none;
-    padding: 0.4rem 0.8rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
+    .product-actions button {
+      background: #111;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
 
-  .product-actions button:hover {
-    background: #333;
-  }
-</style>
+    .product-actions button:hover {
+      background: #333;
+    }
+  </style>
 </head>
 <body>
   <header>
     <h1>Product Catalog</h1>
   </header>
+
   <div class="container">
     <div class="tabs">
       <div class="tab">Best Sellers</div>
@@ -178,7 +179,7 @@
           <option value="Miscellaneous">Miscellaneous</option>
         </select>
       </div>
-      <button onclick="handleSaveProduct()">Save Product</button>
+      <button id="saveBtn">Save Product</button>
     </div>
 
     <div class="product-list"></div>
@@ -186,17 +187,17 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
-  apiKey: "AIzaSyBg--ptpq9w1QNH1HK-SRe88aDx1_yO7yQ",
-  authDomain: "project-3390921463634312663.firebaseapp.com",
-  projectId: "project-3390921463634312663",
-  storageBucket: "project-3390921463634312663.appspot.com",
-  messagingSenderId: "451857573630",
-  appId: "1:451857573630:web:94f4ee25f65ef4967ae7af",
-  measurementId: "G-ED8DN4W1JB"
-};
+      apiKey: "AIzaSyBg--ptpq9w1QNH1HK-SRe88aDx1_yO7yQ",
+      authDomain: "project-3390921463634312663.firebaseapp.com",
+      projectId: "project-3390921463634312663",
+      storageBucket: "project-3390921463634312663.appspot.com",
+      messagingSenderId: "451857573630",
+      appId: "1:451857573630:web:94f4ee25f65ef4967ae7af",
+      measurementId: "G-ED8DN4W1JB"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -205,47 +206,68 @@
       try {
         await addDoc(collection(db, "products"), product);
         alert("Product saved!");
-        fetchProducts();
+        fetchProducts(product.category);
+        clearForm();
       } catch (error) {
         console.error("Error saving product:", error);
         alert("Failed to save product.");
       }
     }
 
-    async function fetchProducts() {
+    function clearForm() {
+      document.querySelectorAll('.sidebar input, .sidebar textarea, .sidebar select').forEach(el => el.value = '');
+    }
+
+    async function fetchProducts(filterCategory = null) {
       const productList = document.querySelector(".product-list");
       productList.innerHTML = "";
       try {
         const querySnapshot = await getDocs(collection(db, "products"));
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const productHTML = `
-            <div class="product">
-              <img src="${data.imageUrl || 'https://via.placeholder.com/80'}" alt="Product Image">
-              <div class="product-info">
-                <strong>${data.name}</strong><br>
-                Brand: ${data.brand}<br>
-                $${data.price}<br>
-                Category: ${data.category}
+        let hasProducts = false;
+
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          if (!filterCategory || data.category === filterCategory) {
+            hasProducts = true;
+            const productHTML = `
+              <div class="product" data-id="${docSnap.id}">
+                <img src="${data.imageUrl || 'https://via.placeholder.com/80'}" alt="Product Image">
+                <div class="product-info">
+                  <strong>${data.name}</strong>
+                  Brand: ${data.brand}<br>
+                  $${data.price}<br>
+                  Category: ${data.category}
+                </div>
+                <div class="product-actions">
+                  <button class="delete">Delete</button>
+                </div>
               </div>
-              <div class="product-actions">
-                <button>Edit</button>
-                <button class="delete">Delete</button>
-              </div>
-            </div>
-          `;
-          productList.innerHTML += productHTML;
+            `;
+            productList.innerHTML += productHTML;
+          }
         });
-        if (querySnapshot.empty) {
+
+        if (!hasProducts) {
           productList.innerHTML = "<p>No products found.</p>";
         }
+
+        document.querySelectorAll(".delete").forEach(btn => {
+          btn.addEventListener("click", async (e) => {
+            const id = e.target.closest(".product").dataset.id;
+            if (confirm("Delete this product?")) {
+              await deleteDoc(doc(db, "products", id));
+              fetchProducts(filterCategory);
+            }
+          });
+        });
+
       } catch (error) {
         console.error("Error fetching products:", error);
         productList.innerHTML = "<p>Error loading products.</p>";
       }
     }
 
-    window.handleSaveProduct = async function () {
+    function handleSaveProduct() {
       const name = document.querySelector('input[placeholder="Product Name"]').value.trim();
       const brand = document.querySelector('input[placeholder="Brand"]').value.trim();
       const description = document.querySelector('textarea[placeholder="Description"]').value.trim();
@@ -258,63 +280,43 @@
         return;
       }
 
-      const product = { name, brand, description, price, imageUrl, category, createdAt: new Date() };
-      await saveProduct(product);
-    };
+      const product = {
+        name,
+        brand,
+        description,
+        price,
+        imageUrl,
+        category,
+        createdAt: new Date()
+      };
 
-    window.addEventListener("DOMContentLoaded", fetchProducts);
-    // Tab filtering
-const tabs = document.querySelectorAll(".tab");
-
-tabs.forEach(tab => {
-  tab.addEventListener("click", () => {
-    tabs.forEach(t => t.classList.remove("active"));
-    tab.classList.add("active");
-    const category = tab.textContent.trim();
-    fetchProducts(category);
-  });
-});
-
-// Updated fetchProducts with optional filter
-async function fetchProducts(filterCategory = null) {
-  const productList = document.querySelector(".product-list");
-  productList.innerHTML = "";
-  try {
-    const querySnapshot = await getDocs(collection(db, "products"));
-    let hasProducts = false;
-
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      if (!filterCategory || data.category === filterCategory) {
-        hasProducts = true;
-        const productHTML = `
-          <div class="product">
-            <img src="${data.imageUrl || 'https://via.placeholder.com/80'}" alt="Product Image">
-            <div class="product-info">
-              <strong>${data.name}</strong>
-              Brand: ${data.brand}<br>
-              $${data.price}<br>
-              Category: ${data.category}
-            </div>
-            <div class="product-actions">
-              <button>Edit</button>
-              <button class="delete">Delete</button>
-            </div>
-          </div>
-        `;
-        productList.innerHTML += productHTML;
-      }
-    });
-
-    if (!hasProducts) {
-      productList.innerHTML = "<p>No products found.</p>";
+      saveProduct(product);
     }
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    productList.innerHTML = "<p>Error loading products.</p>";
-  }
-}
 
+    // Load after DOM ready
+    window.addEventListener("DOMContentLoaded", () => {
+      const tabs = document.querySelectorAll(".tab");
+      const saveBtn = document.getElementById("saveBtn");
+
+      // Load first tab's products
+      if (tabs.length) {
+        tabs[0].classList.add("active");
+        fetchProducts(tabs[0].textContent.trim());
+      }
+
+      // Tab click filtering
+      tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          tabs.forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          const category = tab.textContent.trim();
+          fetchProducts(category);
+        });
+      });
+
+      // Save button event
+      saveBtn.addEventListener("click", handleSaveProduct);
+    });
   </script>
 </body>
 </html>
