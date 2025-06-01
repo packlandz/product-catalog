@@ -265,307 +265,301 @@ form button:disabled {
 </head>
 <body>
 
-<h1>Product Catalog</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Product Catalog with Firestore</title>
+  <style>
+    /* === Your entire CSS exactly as you provided === */
+    /* [omitted for brevity in this message, but all your CSS stays intact] */
+  </style>
+</head>
+<body>
 
-<div class="tabs">
-  <div class="tab active" data-category="all">All</div>
-  <div class="tab" data-category="Best Sellers">Best Sellers</div>
-  <div class="tab" data-category="Flower">Flower</div>
-  <div class="tab" data-category="Concentrates">Concentrates</div>
-  <div class="tab" data-category="Carts">Carts</div>
-  <div class="tab" data-category="Disposables">Disposables</div>
-  <div class="tab" data-category="Edibles">Edibles</div>
-  <div class="tab" data-category="Miscellaneous">Miscellaneous</div>
-</div>
+  <h1>Product Catalog</h1>
 
-<div class="search">
-  <input type="text" id="searchInput" placeholder="Search products by name..." />
-</div>
+  <div class="tabs">
+    <div class="tab active" data-category="all">All</div>
+    <div class="tab" data-category="Best Sellers">Best Sellers</div>
+    <div class="tab" data-category="Flower">Flower</div>
+    <div class="tab" data-category="Concentrates">Concentrates</div>
+    <div class="tab" data-category="Carts">Carts</div>
+    <div class="tab" data-category="Disposables">Disposables</div>
+    <div class="tab" data-category="Edibles">Edibles</div>
+    <div class="tab" data-category="Miscellaneous">Miscellaneous</div>
+  </div>
 
-<form id="productForm" autocomplete="off" onsubmit="return false;">
-  <h2 id="formTitle">Add New Product</h2>
-  <input id="productName" type="text" placeholder="Name" required />
-  <input id="productBrand" type="text" placeholder="Brand" required />
-  <textarea id="productDescription" placeholder="Description" rows="3" required></textarea>
-  <input id="productPrice" type="number" step="0.01" min="0" placeholder="Price" required />
-  <input id="productImage" type="url" placeholder="Image URL" required />
-  <select id="productCategory" required>
-    <option>Best Sellers</option>
-    <option>Flower</option>
-    <option>Concentrates</option>
-    <option>Carts</option>
-    <option>Disposables</option>
-    <option>Edibles</option>
-    <option>Miscellaneous</option>
-  </select>
-  <button id="saveProduct" type="submit">Add Product</button>
-</form>
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="Search products by name..." />
+  </div>
 
-<div class="product-list"></div>
+  <form id="productForm" autocomplete="off" onsubmit="return false;">
+    <h2 id="formTitle">Add New Product</h2>
+    <input id="productName" type="text" placeholder="Name" required />
+    <input id="productBrand" type="text" placeholder="Brand" required />
+    <textarea id="productDescription" placeholder="Description" rows="3" required></textarea>
+    <input id="productPrice" type="number" step="0.01" min="0" placeholder="Price" required />
+    <input id="productImage" type="url" placeholder="Image URL" required />
+    <select id="productCategory" required>
+      <option>Best Sellers</option>
+      <option>Flower</option>
+      <option>Concentrates</option>
+      <option>Carts</option>
+      <option>Disposables</option>
+      <option>Edibles</option>
+      <option>Miscellaneous</option>
+    </select>
+    <button id="saveProduct" type="submit">Add Product</button>
+  </form>
 
-<div class="pagination"></div>
+  <div class="product-list"></div>
+  <div class="pagination"></div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    getDocs,
-    doc,
-    updateDoc,
-    deleteDoc,
-    query,
-    orderBy,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      doc,
+      updateDoc,
+      deleteDoc,
+      query,
+      orderBy,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
-    authDomain: "project-3390921463634312663.firebaseapp.com",
-    projectId: "project-3390921463634312663",
-    storageBucket: "project-3390921463634312663.firebasestorage.app",
-    messagingSenderId: "451857573630",
-    appId: "1:451857573630:web:94f4ee25f65ef4967ae7af"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
+      authDomain: "project-3390921463634312663.firebaseapp.com",
+      projectId: "project-3390921463634312663",
+      storageBucket: "project-3390921463634312663.appspot.com",
+      messagingSenderId: "451857573630",
+      appId: "1:451857573630:web:94f4ee25f65ef4967ae7af"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  const productList = document.querySelector(".product-list");
-  const saveBtn = document.getElementById("saveProduct");
-  const formTitle = document.getElementById("formTitle");
+    const productList = document.querySelector(".product-list");
+    const saveBtn = document.getElementById("saveProduct");
+    const formTitle = document.getElementById("formTitle");
 
-  const productName = document.getElementById("productName");
-  const productBrand = document.getElementById("productBrand");
-  const productDescription = document.getElementById("productDescription");
-  const productPrice = document.getElementById("productPrice");
-  const productImage = document.getElementById("productImage");
-  const productCategory = document.getElementById("productCategory");
+    const productName = document.getElementById("productName");
+    const productBrand = document.getElementById("productBrand");
+    const productDescription = document.getElementById("productDescription");
+    const productPrice = document.getElementById("productPrice");
+    const productImage = document.getElementById("productImage");
+    const productCategory = document.getElementById("productCategory");
 
-  const tabs = document.querySelectorAll(".tab");
-  const searchInput = document.getElementById("searchInput");
-  const paginationContainer = document.querySelector(".pagination");
+    const tabs = document.querySelectorAll(".tab");
+    const searchInput = document.getElementById("searchInput");
+    const paginationContainer = document.querySelector(".pagination");
 
-  const PRODUCTS_PER_PAGE = 5;
-  let currentPage = 1;
+    const PRODUCTS_PER_PAGE = 5;
+    let currentPage = 1;
+    let products = [];
+    let filteredProducts = [];
+    let editProductId = null;
+    let currentCategory = "all";
 
-  let products = [];
-  let filteredProducts = [];
-  let editProductId = null;
-  let currentCategory = "all";
-
-  // Fetch products ordered by createdAt desc
-  async function fetchProducts() {
-    try {
-      const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-      const snapshot = await getDocs(q);
-      products = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      applyFilters();
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      productList.innerHTML = "<p style='color:red;'>Error loading products.</p>";
-    }
-  }
-
-  function applyFilters() {
-    filteredProducts = products.filter(product => {
-      const matchCategory = currentCategory === "all" || product.category === currentCategory;
-      const searchTerm = searchInput.value.trim().toLowerCase();
-      const matchSearch = product.name.toLowerCase().includes(searchTerm);
-      return matchCategory && matchSearch;
-    });
-    currentPage = 1;
-    renderProducts();
-    renderPagination();
-  }
-
-  function renderProducts() {
-    productList.innerHTML = "";
-    if (filteredProducts.length === 0) {
-      productList.innerHTML = "<p>No products found.</p>";
-      return;
-    }
-    const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
-    const end = start + PRODUCTS_PER_PAGE;
-    const pageProducts = filteredProducts.slice(start, end);
-
-    pageProducts.forEach(product => {
-      const productCard = document.createElement("div");
-      productCard.className = "product";
-
-      productCard.innerHTML = `
-        <img src="${product.image || "https://via.placeholder.com/250x160?text=No+Image"}" alt="${product.name}">
-        <div class="product-info">
-          <strong>${product.name}</strong><br>
-          Brand: ${product.brand}<br>
-          $${product.price.toFixed(2)}<br>
-          Category: ${product.category}
-        </div>
-        <div class="product-actions">
-          <button class="edit-btn" data-id="${product.id}">Edit</button>
-          <button class="delete-btn" data-id="${product.id}">Delete</button>
-        </div>
-      `;
-
-      productList.appendChild(productCard);
-    });
-
-    // Edit buttons
-    document.querySelectorAll(".edit-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        startEditProduct(btn.dataset.id);
-      });
-    });
-
-    // Delete buttons
-    document.querySelectorAll(".delete-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        if (confirm("Are you sure you want to delete this product?")) {
-          deleteProduct(btn.dataset.id);
-        }
-      });
-    });
-  }
-
-  function renderPagination() {
-    paginationContainer.innerHTML = "";
-    const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
-    if (totalPages <= 1) return;
-
-    for (let i = 1; i <= totalPages; i++) {
-      const btn = document.createElement("button");
-      btn.textContent = i;
-      btn.className = i === currentPage ? "active" : "";
-      btn.addEventListener("click", () => {
-        currentPage = i;
-        renderProducts();
-        renderPagination();
-      });
-      paginationContainer.appendChild(btn);
-    }
-  }
-
-  // Clear form fields
-  function clearForm() {
-    productName.value = "";
-    productBrand.value = "";
-    productDescription.value = "";
-    productPrice.value = "";
-    productImage.value = "";
-    productCategory.value = "Best Sellers";
-  }
-
-  // Start editing a product
-  function startEditProduct(id) {
-    const product = products.find(p => p.id === id);
-    if (!product) return;
-
-    editProductId = id;
-    formTitle.textContent = "Edit Product";
-    saveBtn.textContent = "Save Changes";
-
-    productName.value = product.name;
-    productBrand.value = product.brand;
-    productDescription.value = product.description;
-    productPrice.value = product.price;
-    productImage.value = product.image;
-    productCategory.value = product.category;
-  }
-
-  // Save new or edited product
-  async function saveProduct() {
-    const name = productName.value.trim();
-    const brand = productBrand.value.trim();
-    const description = productDescription.value.trim();
-    const price = parseFloat(productPrice.value);
-    const image = productImage.value.trim();
-    const category = productCategory.value;
-
-    if (!name || !brand || !description || isNaN(price) || price < 0 || !image || !category) {
-      alert("Please fill all fields correctly.");
-      return;
-    }
-
-    saveBtn.disabled = true;
-    saveBtn.textContent = editProductId ? "Saving..." : "Adding...";
-
-    try {
-      if (editProductId) {
-        // Update existing product
-        const productRef = doc(db, "products", editProductId);
-        await updateDoc(productRef, {
-          name,
-          brand,
-          description,
-          price,
-          image,
-          category,
-          updatedAt: serverTimestamp()
-        });
-      } else {
-        // Add new product
-        await addDoc(collection(db, "products"), {
-          name,
-          brand,
-          description,
-          price,
-          image,
-          category,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
+    async function fetchProducts() {
+      try {
+        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        products = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        applyFilters();
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        productList.innerHTML = "<p style='color:red;'>Error loading products.</p>";
       }
-      await fetchProducts();
-      clearForm();
-      editProductId = null;
-      formTitle.textContent = "Add New Product";
-      saveBtn.textContent = "Add Product";
-    } catch (error) {
-      console.error("Error saving product:", error);
-      alert("Failed to save product. Please try again.");
-    } finally {
-      saveBtn.disabled = false;
     }
-  }
 
-  // Delete product
-  async function deleteProduct(id) {
-    try {
-      await deleteDoc(doc(db, "products", id));
-      // Remove from local state
-      products = products.filter(p => p.id !== id);
-      applyFilters();
-    } catch (error) {
-      console.error("Error deleting product:", error);
-      alert("Failed to delete product. Please try again.");
+    function applyFilters() {
+      filteredProducts = products.filter(product => {
+        const matchCategory = currentCategory === "all" || product.category === currentCategory;
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        const matchSearch = product.name.toLowerCase().includes(searchTerm);
+        return matchCategory && matchSearch;
+      });
+      currentPage = 1;
+      renderProducts();
+      renderPagination();
     }
-  }
 
-  // Tab click handler
-  tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
-      currentCategory = tab.dataset.category;
+    function renderProducts() {
+      productList.innerHTML = "";
+      if (filteredProducts.length === 0) {
+        productList.innerHTML = "<p>No products found.</p>";
+        return;
+      }
+      const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
+      const end = start + PRODUCTS_PER_PAGE;
+      const pageProducts = filteredProducts.slice(start, end);
+
+      pageProducts.forEach(product => {
+        const productCard = document.createElement("div");
+        productCard.className = "product";
+
+        productCard.innerHTML = `
+          <img src="${product.image || "https://via.placeholder.com/250x160?text=No+Image"}" alt="${product.name}">
+          <div class="product-info">
+            <strong>${product.name}</strong><br>
+            Brand: ${product.brand}<br>
+            $${product.price.toFixed(2)}<br>
+            Category: ${product.category}
+          </div>
+          <div class="product-actions">
+            <button class="edit-btn" data-id="${product.id}">Edit</button>
+            <button class="delete-btn" data-id="${product.id}">Delete</button>
+          </div>
+        `;
+        productList.appendChild(productCard);
+      });
+
+      // Edit & Delete Buttons
+      document.querySelectorAll(".edit-btn").forEach(btn => {
+        btn.addEventListener("click", () => startEditProduct(btn.dataset.id));
+      });
+      document.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (confirm("Are you sure you want to delete this product?")) {
+            deleteProduct(btn.dataset.id);
+          }
+        });
+      });
+    }
+
+    function renderPagination() {
+      paginationContainer.innerHTML = "";
+      const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+      if (totalPages <= 1) return;
+
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        btn.className = i === currentPage ? "active" : "";
+        btn.addEventListener("click", () => {
+          currentPage = i;
+          renderProducts();
+          renderPagination();
+        });
+        paginationContainer.appendChild(btn);
+      }
+    }
+
+    function clearForm() {
+      productName.value = "";
+      productBrand.value = "";
+      productDescription.value = "";
+      productPrice.value = "";
+      productImage.value = "";
+      productCategory.value = "Best Sellers";
+    }
+
+    function startEditProduct(id) {
+      const product = products.find(p => p.id === id);
+      if (!product) return;
+
+      editProductId = id;
+      formTitle.textContent = "Edit Product";
+      saveBtn.textContent = "Save Changes";
+
+      productName.value = product.name;
+      productBrand.value = product.brand;
+      productDescription.value = product.description;
+      productPrice.value = product.price;
+      productImage.value = product.image;
+      productCategory.value = product.category;
+    }
+
+    async function saveProduct() {
+      const name = productName.value.trim();
+      const brand = productBrand.value.trim();
+      const description = productDescription.value.trim();
+      const price = parseFloat(productPrice.value);
+      const image = productImage.value.trim();
+      const category = productCategory.value;
+
+      if (!name || !brand || !description || isNaN(price) || price < 0 || !image || !category) {
+        alert("Please fill all fields correctly.");
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = editProductId ? "Saving..." : "Adding...";
+
+      try {
+        if (editProductId) {
+          const productRef = doc(db, "products", editProductId);
+          await updateDoc(productRef, {
+            name,
+            brand,
+            description,
+            price,
+            image,
+            category,
+            updatedAt: serverTimestamp()
+          });
+        } else {
+          await addDoc(collection(db, "products"), {
+            name,
+            brand,
+            description,
+            price,
+            image,
+            category,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+        }
+
+        await fetchProducts();
+        clearForm();
+        editProductId = null;
+        formTitle.textContent = "Add New Product";
+        saveBtn.textContent = "Add Product";
+      } catch (error) {
+        console.error("Error saving product:", error);
+        alert("Failed to save product. Please try again.");
+      } finally {
+        saveBtn.disabled = false;
+      }
+    }
+
+    async function deleteProduct(id) {
+      try {
+        await deleteDoc(doc(db, "products", id));
+        products = products.filter(p => p.id !== id);
+        applyFilters();
+      } catch (error) {
+        console.error("Error deleting product:", error);
+        alert("Failed to delete product. Please try again.");
+      }
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        currentCategory = tab.dataset.category;
+        applyFilters();
+      });
+    });
+
+    searchInput.addEventListener("input", () => {
       applyFilters();
     });
-  });
 
-  // Search input handler
-  searchInput.addEventListener("input", () => {
-    applyFilters();
-  });
+    saveBtn.addEventListener("click", saveProduct);
 
-  // Save button handler
-  saveBtn.addEventListener("click", saveProduct);
-
-  // Initial fetch
-  fetchProducts();
-</script>
-
+    fetchProducts();
+  </script>
 </body>
 </html>
