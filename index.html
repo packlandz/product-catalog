@@ -5,34 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Product Catalog</title>
   <style>
+    /* Add your CSS styles here */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
     }
-
     header {
       background-color: #111;
       color: white;
       padding: 1rem;
       text-align: center;
     }
-
     .container {
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      flex-direction: row;
       padding: 2rem;
     }
-
+    .main-content {
+      flex: 3;
+      margin-right: 2rem;
+    }
+    .sidebar {
+      flex: 1;
+      background: white;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
     .tabs {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
       gap: 1rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
     }
-
     .tab {
       background: white;
       border: 1px solid #ddd;
@@ -41,59 +47,34 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-
     .tab.active {
       background-color: #111;
       color: white;
     }
-
-    .sidebar {
-      background: white;
-      padding: 1rem;
-      margin-top: 2rem;
-      width: 300px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-
-    .form-group {
+    .search-bar {
       margin-bottom: 1rem;
     }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
+    .search-bar input {
       width: 100%;
       padding: 0.5rem;
-      margin-top: 0.5rem;
       border-radius: 4px;
       border: 1px solid #ccc;
     }
-
     .product-list {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 1.5rem;
-      width: 100%;
-      max-width: 1200px;
-      padding: 1rem;
     }
-
     .product {
       background: white;
       padding: 1rem;
       border-radius: 12px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       transition: transform 0.2s ease;
     }
-
     .product:hover {
       transform: translateY(-5px);
     }
-
     .product img {
       width: 100%;
       height: 180px;
@@ -101,26 +82,22 @@
       border-radius: 8px;
       margin-bottom: 0.75rem;
     }
-
     .product-info {
       text-align: center;
       font-size: 0.95rem;
       color: #333;
     }
-
     .product-info strong {
       display: block;
       font-size: 1.1rem;
       margin-bottom: 0.3rem;
     }
-
     .product-actions {
       margin-top: 0.75rem;
       display: flex;
       justify-content: center;
       gap: 0.5rem;
     }
-
     .product-actions button {
       background: #111;
       color: white;
@@ -130,9 +107,45 @@
       cursor: pointer;
       transition: background 0.2s ease;
     }
-
     .product-actions button:hover {
       background: #333;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .pagination {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    .pagination button {
+      background: #111;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 0 0.2rem;
+    }
+    .pagination button:hover {
+      background: #333;
+    }
+    .telegram-link {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .telegram-link a {
+      color: #0088cc;
+      text-decoration: none;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -140,36 +153,43 @@
   <header>
     <h1>Product Catalog</h1>
   </header>
-
   <div class="container">
-    <div class="tabs">
-      <div class="tab">Best Sellers</div>
-      <div class="tab">Flower</div>
-      <div class="tab">Concentrates</div>
-      <div class="tab">Carts</div>
-      <div class="tab">Disposables</div>
-      <div class="tab">Edibles</div>
-      <div class="tab">Miscellaneous</div>
+    <div class="main-content">
+      <div class="tabs">
+        <div class="tab active" data-category="All">All</div>
+        <div class="tab" data-category="Best Sellers">Best Sellers</div>
+        <div class="tab" data-category="Flower">Flower</div>
+        <div class="tab" data-category="Concentrates">Concentrates</div>
+        <div class="tab" data-category="Carts">Carts</div>
+        <div class="tab" data-category="Disposables">Disposables</div>
+        <div class="tab" data-category="Edibles">Edibles</div>
+        <div class="tab" data-category="Miscellaneous">Miscellaneous</div>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search by name or brand..." />
+      </div>
+      <div class="product-list" id="productList"></div>
+      <div class="pagination" id="pagination"></div>
     </div>
-
     <div class="sidebar">
+      <h3>Add / Edit Product</h3>
       <div class="form-group">
-        <input type="text" placeholder="Product Name" />
+        <input type="text" id="productName" placeholder="Product Name" />
       </div>
       <div class="form-group">
-        <input type="text" placeholder="Brand" />
+        <input type="text" id="productBrand" placeholder="Brand" />
       </div>
       <div class="form-group">
-        <textarea placeholder="Description"></textarea>
+        <textarea id="productDescription" placeholder="Description"></textarea>
       </div>
       <div class="form-group">
-        <input type="number" placeholder="Price" />
+        <input type="number" id="productPrice" placeholder="Price" />
       </div>
       <div class="form-group">
-        <input type="text" placeholder="Image URL" />
+        <input type="text" id="productImage" placeholder="Image URL" />
       </div>
       <div class="form-group">
-        <select>
+        <select id="productCategory">
           <option value="Best Sellers">Best Sellers</option>
           <option value="Flower">Flower</option>
           <option value="Concentrates">Concentrates</option>
@@ -179,144 +199,90 @@
           <option value="Miscellaneous">Miscellaneous</option>
         </select>
       </div>
-      <button id="saveBtn">Save Product</button>
+      <button id="saveProductBtn">Save Product</button>
+      <div class="telegram-link">
+        <p>Contact us on Telegram:</p>
+        <a href="https://t.me/your_telegram_username" target="_blank">@your_telegram_username</a>
+      </div>
     </div>
-
-    <div class="product-list"></div>
   </div>
 
+  <!-- Firebase SDK -->
   <script type="module">
+    // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      doc,
+      updateDoc,
+      deleteDoc,
+      query,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
+    // Your Firebase configuration
     const firebaseConfig = {
-      apiKey: "AIzaSyBg--ptpq9w1QNH1HK-SRe88aDx1_yO7yQ",
+      apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
       authDomain: "project-3390921463634312663.firebaseapp.com",
       projectId: "project-3390921463634312663",
-      storageBucket: "project-3390921463634312663.appspot.com",
+      storageBucket: "project-3390921463634312663.firebasestorage.app",
       messagingSenderId: "451857573630",
       appId: "1:451857573630:web:94f4ee25f65ef4967ae7af",
-      measurementId: "G-ED8DN4W1JB"
+      measurementId: "G-EDB0N4W1JB"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    async function saveProduct(product) {
+    // DOM Elements
+    const productList = document.getElementById("productList");
+    const pagination = document.getElementById("pagination");
+    const searchInput = document.getElementById("searchInput");
+    const tabs = document.querySelectorAll(".tab");
+    const saveProductBtn = document.getElementById("saveProductBtn");
+
+    // Form Inputs
+    const productName = document.getElementById("productName");
+    const productBrand = document.getElementById("productBrand");
+    const productDescription = document.getElementById("productDescription");
+    const productPrice = document.getElementById("productPrice");
+    const productImage = document.getElementById("productImage");
+    const productCategory = document.getElementById("productCategory");
+
+    // State Variables
+    let products = [];
+    let currentPage = 1;
+    const productsPerPage = 6;
+    let currentCategory = "All";
+    let currentSearch = "";
+    let editProductId = null;
+
+    // Fetch Products from Firestore
+    async function fetchProducts() {
       try {
-        await addDoc(collection(db, "products"), product);
-        alert("Product saved!");
-        fetchProducts(product.category);
-        clearForm();
-      } catch (error) {
-        console.error("Error saving product:", error);
-        alert("Failed to save product.");
-      }
-    }
-
-    function clearForm() {
-      document.querySelectorAll('.sidebar input, .sidebar textarea, .sidebar select').forEach(el => el.value = '');
-    }
-
-    async function fetchProducts(filterCategory = null) {
-      const productList = document.querySelector(".product-list");
-      productList.innerHTML = "";
-      try {
-        const querySnapshot = await getDocs(collection(db, "products"));
-        let hasProducts = false;
-
-        querySnapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          if (!filterCategory || data.category === filterCategory) {
-            hasProducts = true;
-            const productHTML = `
-              <div class="product" data-id="${docSnap.id}">
-                <img src="${data.imageUrl || 'https://via.placeholder.com/80'}" alt="Product Image">
-                <div class="product-info">
-                  <strong>${data.name}</strong>
-                  Brand: ${data.brand}<br>
-                  $${data.price}<br>
-                  Category: ${data.category}
-                </div>
-                <div class="product-actions">
-                  <button class="delete">Delete</button>
-                </div>
-              </div>
-            `;
-            productList.innerHTML += productHTML;
-          }
+        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        products = [];
+        querySnapshot.forEach((doc) => {
+          products.push({ id: doc.id, ...doc.data() });
         });
-
-        if (!hasProducts) {
-          productList.innerHTML = "<p>No products found.</p>";
-        }
-
-        document.querySelectorAll(".delete").forEach(btn => {
-          btn.addEventListener("click", async (e) => {
-            const id = e.target.closest(".product").dataset.id;
-            if (confirm("Delete this product?")) {
-              await deleteDoc(doc(db, "products", id));
-              fetchProducts(filterCategory);
-            }
-          });
-        });
-
+        renderProducts();
       } catch (error) {
         console.error("Error fetching products:", error);
-        productList.innerHTML = "<p>Error loading products.</p>";
       }
     }
 
-    function handleSaveProduct() {
-      const name = document.querySelector('input[placeholder="Product Name"]').value.trim();
-      const brand = document.querySelector('input[placeholder="Brand"]').value.trim();
-      const description = document.querySelector('textarea[placeholder="Description"]').value.trim();
-      const price = parseFloat(document.querySelector('input[placeholder="Price"]').value.trim());
-      const imageUrl = document.querySelector('input[placeholder="Image URL"]').value.trim();
-      const category = document.querySelector("select").value;
+    // Render Products
+    function renderProducts() {
+      let filteredProducts = products;
 
-      if (!name || isNaN(price) || !category) {
-        alert("Please enter a valid product name, price, and category.");
-        return;
-      }
+      // Filter by Category
+      if (currentCategory !== "All") {
+        filteredProducts = filteredProducts.filter(
 
-      const product = {
-        name,
-        brand,
-        description,
-        price,
-        imageUrl,
-        category,
-        createdAt: new Date()
-      };
-
-      saveProduct(product);
-    }
-
-    // Load after DOM ready
-    window.addEventListener("DOMContentLoaded", () => {
-      const tabs = document.querySelectorAll(".tab");
-      const saveBtn = document.getElementById("saveBtn");
-
-      // Load first tab's products
-      if (tabs.length) {
-        tabs[0].classList.add("active");
-        fetchProducts(tabs[0].textContent.trim());
-      }
-
-      // Tab click filtering
-      tabs.forEach(tab => {
-        tab.addEventListener("click", () => {
-          tabs.forEach(t => t.classList.remove("active"));
-          tab.classList.add("active");
-          const category = tab.textContent.trim();
-          fetchProducts(category);
-        });
-      });
-
-      // Save button event
-      saveBtn.addEventListener("click", handleSaveProduct);
-    });
-  </script>
-</body>
-</html>
+::contentReference[oaicite:0]{index=0}
+ 
