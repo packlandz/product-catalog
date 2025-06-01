@@ -1,318 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Product Catalog with Firestore</title>
-<style>
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 30px auto;
-  max-width: 960px;
-  background: #f9fafb;
-  color: #333;
-  line-height: 1.5;
-}
-
-h1 {
-  text-align: center;
-  font-weight: 700;
-  color: #222;
-  margin-bottom: 30px;
-  letter-spacing: 1px;
-}
-
-.tabs {
-  margin-bottom: 25px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-.tab {
-  cursor: pointer;
-  padding: 10px 18px;
-  border-radius: 30px;
-  background: #e1e7f0;
-  color: #4a5568;
-  font-weight: 600;
-  user-select: none;
-  transition: background-color 0.3s, color 0.3s;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
-}
-
-.tab:hover:not(.active) {
-  background: #cbd5e1;
-  color: #2d3748;
-}
-
-.tab.active {
-  background: #2563eb;
-  color: white;
-  box-shadow: 0 4px 8px rgb(37 99 235 / 0.5);
-}
-
-.search {
-  max-width: 480px;
-  margin: 0 auto 30px;
-}
-
-#searchInput {
-  width: 100%;
-  padding: 12px 15px;
-  font-size: 1rem;
-  border-radius: 30px;
-  border: 1.5px solid #cbd5e1;
-  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.05);
-  transition: border-color 0.3s;
-}
-
-#searchInput:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 6px #2563ebaa inset;
-}
-
-.product-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
-}
-
-.product {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 6px 15px rgb(0 0 0 / 0.08);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.product:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgb(0 0 0 / 0.15);
-}
-
-.product img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-bottom: 1px solid #e2e8f0;
-  transition: filter 0.3s ease;
-}
-
-.product:hover img {
-  filter: brightness(1.05);
-}
-
-.product-info {
-  padding: 16px 18px;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-size: 0.95rem;
-  color: #2d3748;
-}
-
-.product-info strong {
-  font-size: 1.1rem;
-  color: #1a202c;
-  margin-bottom: 6px;
-}
-
-.product-info > div:not(:last-child) {
-  margin-bottom: 6px;
-}
-
-.product-actions {
-  padding: 12px 18px;
-  background: #f7fafc;
-  border-top: 1px solid #e2e8f0;
-  text-align: right;
-}
-
-.product-actions button {
-  margin-left: 8px;
-  padding: 7px 16px;
-  border-radius: 9999px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-size: 0.9rem;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
-}
-
-.product-actions .edit-btn {
-  background-color: #3b82f6;
-  color: white;
-}
-
-.product-actions .edit-btn:hover {
-  background-color: #2563eb;
-}
-
-.product-actions .delete-btn {
-  background-color: #ef4444;
-  color: white;
-}
-
-.product-actions .delete-btn:hover {
-  background-color: #dc2626;
-}
-
-form {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgb(0 0 0 / 0.07);
-  padding: 25px 30px;
-  max-width: 480px;
-  margin: 0 auto 40px;
-  font-size: 1rem;
-  color: #2d3748;
-}
-
-form h2 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  font-weight: 700;
-  color: #1a202c;
-  text-align: center;
-}
-
-form input,
-form select,
-form textarea {
-  font-size: 1rem;
-  padding: 12px 14px;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  transition: border-color 0.3s;
-  width: 100%;
-  box-sizing: border-box;
-  font-family: inherit;
-}
-
-form input:focus,
-form select:focus,
-form textarea:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 8px #2563eb88;
-}
-
-form button {
-  background-color: #2563eb;
-  color: white;
-  padding: 14px;
-  border-radius: 9999px;
-  font-weight: 700;
-  border: none;
-  width: 100%;
-  cursor: pointer;
-  font-size: 1.1rem;
-  box-shadow: 0 6px 12px rgb(37 99 235 / 0.4);
-  transition: background-color 0.3s ease;
-}
-
-form button:hover:not(:disabled) {
-  background-color: #1e40af;
-}
-
-form button:disabled {
-  background-color: #94a3b8;
-  cursor: not-allowed;
-}
-
-.pagination {
-  text-align: center;
-  margin-top: 20px;
-  user-select: none;
-}
-
-.pagination button {
-  margin: 0 6px;
-  padding: 8px 14px;
-  border-radius: 50%;
-  border: 1.5px solid #cbd5e1;
-  background: white;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 1rem;
-  color: #4a5568;
-  transition: background-color 0.3s, color 0.3s;
-  width: 40px;
-  height: 40px;
-  line-height: 24px;
-}
-
-.pagination button.active {
-  background-color: #2563eb;
-  border-color: #2563eb;
-  color: white;
-  box-shadow: 0 6px 12px rgb(37 99 235 / 0.4);
-}
-
-.pagination button:hover:not(.active) {
-  background-color: #e2e8f0;
-  color: #1e293b;
-}
-</style>
-</head>
-<body>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Product Catalog with Firestore</title>
+  <title>Product Catalog</title>
   <style>
-    /* === Your entire CSS exactly as you provided === */
-    /* [omitted for brevity in this message, but all your CSS stays intact] */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .container {
+      display: flex;
+    }
+
+    .main {
+      flex: 1;
+      padding: 1rem;
+    }
+
+    .sidebar {
+      width: 250px;
+      padding: 1rem;
+      background: #fff;
+      border-left: 1px solid #ddd;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .tab {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #fff;
+    }
+    .tab.active {
+      background: #007bff;
+      color: #fff;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .product {
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+
+    .product-info {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .product-actions {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem;
+    }
+
+    .product-actions button {
+      padding: 0.25rem 0.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .product-actions .edit-btn {
+      background: #ffc107;
+      color: #000;
+    }
+
+    .product-actions .delete-btn {
+      background: #dc3545;
+      color: #fff;
+    }
+
+    .pagination {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .pagination button {
+      margin: 0 0.25rem;
+      padding: 0.5rem;
+      border: none;
+      background: #007bff;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .pagination button.active {
+      background: #0056b3;
+    }
+
+    .sidebar a {
+      display: inline-block;
+      background: #0088cc;
+      color: white;
+      padding: 0.75rem;
+      text-align: center;
+      border-radius: 6px;
+      text-decoration: none;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid #ddd;
+      }
+    }
   </style>
 </head>
 <body>
-
   <h1>Product Catalog</h1>
+  <div class="container">
+    <div class="main">
+      <div class="tabs">
+        <div class="tab active" data-category="all">All</div>
+        <div class="tab" data-category="Best Sellers">Best Sellers</div>
+        <div class="tab" data-category="Flower">Flower</div>
+        <div class="tab" data-category="Concentrates">Concentrates</div>
+        <div class="tab" data-category="Carts">Carts</div>
+        <div class="tab" data-category="Disposables">Disposables</div>
+        <div class="tab" data-category="Edibles">Edibles</div>
+        <div class="tab" data-category="Miscellaneous">Miscellaneous</div>
+      </div>
 
-  <div class="tabs">
-    <div class="tab active" data-category="all">All</div>
-    <div class="tab" data-category="Best Sellers">Best Sellers</div>
-    <div class="tab" data-category="Flower">Flower</div>
-    <div class="tab" data-category="Concentrates">Concentrates</div>
-    <div class="tab" data-category="Carts">Carts</div>
-    <div class="tab" data-category="Disposables">Disposables</div>
-    <div class="tab" data-category="Edibles">Edibles</div>
-    <div class="tab" data-category="Miscellaneous">Miscellaneous</div>
+      <div class="search">
+        <input type="text" id="searchInput" placeholder="Search products..." />
+      </div>
+
+      <div class="product-grid product-list"></div>
+      <div class="pagination"></div>
+    </div>
+
+    <div class="sidebar">
+      <h3>Need Help?</h3>
+      <a href="https://t.me/yourchannel" target="_blank">Join us on Telegram</a>
+    </div>
   </div>
-
-  <div class="search">
-    <input type="text" id="searchInput" placeholder="Search products by name..." />
-  </div>
-
-  <form id="productForm" autocomplete="off" onsubmit="return false;">
-    <h2 id="formTitle">Add New Product</h2>
-    <input id="productName" type="text" placeholder="Name" required />
-    <input id="productBrand" type="text" placeholder="Brand" required />
-    <textarea id="productDescription" placeholder="Description" rows="3" required></textarea>
-    <input id="productPrice" type="number" step="0.01" min="0" placeholder="Price" required />
-    <input id="productImage" type="url" placeholder="Image URL" required />
-    <select id="productCategory" required>
-      <option>Best Sellers</option>
-      <option>Flower</option>
-      <option>Concentrates</option>
-      <option>Carts</option>
-      <option>Disposables</option>
-      <option>Edibles</option>
-      <option>Miscellaneous</option>
-    </select>
-    <button id="saveProduct" type="submit">Add Product</button>
-  </form>
 
   <div class="product-list"></div>
   <div class="pagination"></div>
