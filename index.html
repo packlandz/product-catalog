@@ -1,180 +1,203 @@
-import React, { useEffect, useState } from 'react';
-import { db } from './firebase';
-import {
-  collection,
-  getDocs,
-  addDoc,
-  updateDoc,
-  doc,
-} from 'firebase/firestore';
-
-const categories = [
-  'Best sellers',
-  'Flower',
-  'Concentrates',
-  'Carts',
-  'Disposables',
-  'Edibles',
-  'Miscellaneous',
-];
-
-export default function ProductCatalog() {
-  const [products, setProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('Best sellers');
-  const [form, setForm] = useState({
-    name: '',
-    price: '',
-    category: '',
-    image: '',
-  });
-  const [editId, setEditId] = useState(null);
-
-  const fetchProducts = async () => {
-    const snapshot = await getDocs(collection(db, 'products'));
-    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setProducts(data);
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (editId) {
-      await updateDoc(doc(db, 'products', editId), form);
-    } else {
-      await addDoc(collection(db, 'products'), form);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Catalog</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: row;
     }
-    setForm({ name: '', price: '', category: '', image: '' });
-    setEditId(null);
-    fetchProducts();
-  };
 
-  const handleEdit = (product) => {
-    setForm({
-      name: product.name,
-      price: product.price,
-      category: product.category,
-      image: product.image,
-    });
-    setEditId(product.id);
-  };
+    header {
+      background-color: #111;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10;
+    }
 
-  const filteredProducts = products.filter(
-    (product) => product.category === selectedCategory
-  );
+    .main-content {
+      flex: 1;
+      margin-top: 80px;
+      padding: 2rem;
+    }
 
-  return (
-    <div className="flex">
-      <div className="flex-1 p-6">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold mb-4">Product Catalog</h1>
-          <div className="flex justify-center space-x-4 flex-wrap">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium shadow-md transition ${
-                  selectedCategory === cat ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-        </div>
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="border rounded-lg p-4 shadow hover:shadow-lg transition cursor-pointer"
-              onClick={() => handleEdit(product)}
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-40 object-cover mb-4 rounded"
-              />
-              <h2 className="text-lg font-semibold">{product.name}</h2>
-              <p className="text-gray-600">${product.price}</p>
-              <p className="text-sm text-gray-500">{product.category}</p>
-            </div>
-          ))}
-        </div>
+    .tab {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 0.5rem 1.2rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-        <form onSubmit={handleSubmit} className="bg-gray-100 p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-bold mb-4">{editId ? 'Edit Product' : 'Add Product'}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <input
-              type="text"
-              placeholder="Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="border p-2 rounded"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Price"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
-              className="border p-2 rounded"
-              required
-            />
-            <select
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="border p-2 rounded"
-              required
-            >
-              <option value="">Select category</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-            <input
-              type="text"
-              placeholder="Image URL"
-              value={form.image}
-              onChange={(e) => setForm({ ...form, image: e.target.value })}
-              className="border p-2 rounded"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
-          >
-            {editId ? 'Update Product' : 'Add Product'}
-          </button>
-        </form>
-      </div>
+    .tab.active {
+      background-color: #111;
+      color: white;
+    }
 
-      <div className="w-64 p-6 border-l bg-gray-50">
-        <h2 className="text-xl font-bold mb-4">Links</h2>
-        <ul className="space-y-2">
-          <li>
-            <a
-              href="https://t.me/yourtelegramlink"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
-            >
-              Telegram
-            </a>
-          </li>
-          {/* Add more links here */}
-        </ul>
-      </div>
+    .sidebar {
+      width: 300px;
+      padding: 2rem 1rem;
+      border-left: 1px solid #ddd;
+      background-color: #fff;
+      height: 100vh;
+      position: fixed;
+      right: 0;
+      top: 80px;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .product {
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s ease;
+    }
+
+    .product:hover {
+      transform: translateY(-5px);
+    }
+
+    .product img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+    }
+
+    .product-info {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #333;
+    }
+
+    .product-info strong {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .product-actions {
+      margin-top: 0.75rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .product-actions button {
+      background: #111;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .product-actions button:hover {
+      background: #333;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Product Catalog</h1>
+  </header>
+
+  <div class="main-content">
+    <div class="tabs">
+      <div class="tab active" data-category="all">All</div>
+      <div class="tab" data-category="Best Sellers">Best Sellers</div>
+      <div class="tab" data-category="Flower">Flower</div>
+      <div class="tab" data-category="Concentrates">Concentrates</div>
+      <div class="tab" data-category="Carts">Carts</div>
+      <div class="tab" data-category="Disposables">Disposables</div>
+      <div class="tab" data-category="Edibles">Edibles</div>
+      <div class="tab" data-category="Miscellaneous">Miscellaneous</div>
     </div>
-  );
-}
 
-<script type="module"
+    <input type="text" id="searchInput" placeholder="Search products..." style="width: 100%; max-width: 400px; padding: 0.5rem; margin-bottom: 2rem;"/>
+
+    <div class="product-list"></div>
+
+    <div class="pagination" style="margin-top: 1.5rem; text-align: center;"></div>
+  </div>
+
+  <div class="sidebar">
+    <h2 id="formTitle">Add Product</h2>
+    <div class="form-group">
+      <input type="text" id="productName" placeholder="Product Name" />
+    </div>
+    <div class="form-group">
+      <input type="text" id="productBrand" placeholder="Brand" />
+    </div>
+    <div class="form-group">
+      <textarea id="productDescription" placeholder="Description"></textarea>
+    </div>
+    <div class="form-group">
+      <input type="number" id="productPrice" placeholder="Price" />
+    </div>
+    <div class="form-group">
+      <input type="text" id="productImage" placeholder="Image URL" />
+    </div>
+    <div class="form-group">
+      <select id="productCategory">
+        <option value="Best Sellers">Best Sellers</option>
+        <option value="Flower">Flower</option>
+        <option value="Concentrates">Concentrates</option>
+        <option value="Carts">Carts</option>
+        <option value="Disposables">Disposables</option>
+        <option value="Edibles">Edibles</option>
+        <option value="Miscellaneous">Miscellaneous</option>
+      </select>
+    </div>
+    <button id="saveProduct">Add Product</button>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
