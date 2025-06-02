@@ -10,7 +10,12 @@
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
       display: flex;
-      flex-direction: row;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     header {
@@ -18,25 +23,14 @@
       color: white;
       padding: 1rem;
       text-align: center;
-      width: 100%;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 10;
-    }
-
-    .main-content {
-      flex: 1;
-      margin-top: 80px;
-      padding: 2rem;
     }
 
     .tabs {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
+      flex-wrap: wrap;
+      padding: 1rem;
       gap: 1rem;
-      margin-bottom: 2rem;
     }
 
     .tab {
@@ -53,103 +47,112 @@
       color: white;
     }
 
-    .sidebar {
-      width: 300px;
-      padding: 2rem 1rem;
-      border-left: 1px solid #ddd;
-      background-color: #fff;
-      height: 100vh;
-      position: fixed;
-      right: 0;
-      top: 80px;
-      overflow-y: auto;
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-      border-radius: 4px;
-      border: 1px solid #ccc;
+    .catalog-container {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 2rem;
     }
 
     .product-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 1.5rem;
-      max-width: 1200px;
-      margin: 0 auto;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      max-width: 1000px;
+      width: 100%;
     }
 
     .product {
       background: white;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 0.75rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: transform 0.2s ease;
-    }
-
-    .product:hover {
-      transform: translateY(-5px);
     }
 
     .product img {
       width: 100%;
-      height: 180px;
+      height: 140px;
       object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 0.75rem;
+      border-radius: 6px;
     }
 
     .product-info {
       text-align: center;
-      font-size: 0.95rem;
-      color: #333;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
     }
 
     .product-info strong {
       display: block;
-      font-size: 1.1rem;
+      font-size: 1rem;
       margin-bottom: 0.3rem;
     }
 
     .product-actions {
-      margin-top: 0.75rem;
       display: flex;
-      justify-content: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
     }
 
     .product-actions button {
-      background: #111;
+      padding: 0.3rem 0.6rem;
+      background-color: #111;
       color: white;
       border: none;
-      padding: 0.4rem 0.8rem;
-      border-radius: 5px;
+      border-radius: 4px;
       cursor: pointer;
-      transition: background 0.2s ease;
     }
 
-    .product-actions button:hover {
-      background: #333;
+    .sidebar {
+      width: 280px;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      height: fit-content;
+    }
+
+    .sidebar h3 {
+      margin-top: 0;
+    }
+
+    .sidebar a {
+      display: block;
+      margin-bottom: 0.75rem;
+      color: #111;
+      text-decoration: none;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .pagination button {
+      padding: 0.3rem 0.6rem;
+      border: 1px solid #ccc;
+      background: white;
+      cursor: pointer;
+    }
+
+    .pagination .active {
+      background: #111;
+      color: white;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Product Catalog</h1>
-  </header>
-
   <div class="main-content">
+    <header>
+      <h1>Product Catalog</h1>
+    </header>
+
     <div class="tabs">
       <div class="tab active" data-category="all">All</div>
       <div class="tab" data-category="Best Sellers">Best Sellers</div>
@@ -161,42 +164,17 @@
       <div class="tab" data-category="Miscellaneous">Miscellaneous</div>
     </div>
 
-    <input type="text" id="searchInput" placeholder="Search products..." style="width: 100%; max-width: 400px; padding: 0.5rem; margin-bottom: 2rem;"/>
+    <div class="catalog-container">
+      <div class="product-list"></div>
+      <div class="sidebar">
+        <h3>Links</h3>
+        <a href="https://t.me/yourchannel" target="_blank">Telegram</a>
+        <a href="#">Link 2</a>
+        <a href="#">Link 3</a>
+      </div>
+    </div>
 
-    <div class="product-list"></div>
-
-    <div class="pagination" style="margin-top: 1.5rem; text-align: center;"></div>
-  </div>
-
-  <div class="sidebar">
-    <h2 id="formTitle">Add Product</h2>
-    <div class="form-group">
-      <input type="text" id="productName" placeholder="Product Name" />
-    </div>
-    <div class="form-group">
-      <input type="text" id="productBrand" placeholder="Brand" />
-    </div>
-    <div class="form-group">
-      <textarea id="productDescription" placeholder="Description"></textarea>
-    </div>
-    <div class="form-group">
-      <input type="number" id="productPrice" placeholder="Price" />
-    </div>
-    <div class="form-group">
-      <input type="text" id="productImage" placeholder="Image URL" />
-    </div>
-    <div class="form-group">
-      <select id="productCategory">
-        <option value="Best Sellers">Best Sellers</option>
-        <option value="Flower">Flower</option>
-        <option value="Concentrates">Concentrates</option>
-        <option value="Carts">Carts</option>
-        <option value="Disposables">Disposables</option>
-        <option value="Edibles">Edibles</option>
-        <option value="Miscellaneous">Miscellaneous</option>
-      </select>
-    </div>
-    <button id="saveProduct">Add Product</button>
+    <div class="pagination"></div>
   </div>
 
   <script type="module">
