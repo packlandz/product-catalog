@@ -1,644 +1,383 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Product Catalog with Admin Form</title>
-  <style>
-    /* Base styles & reset */
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Product Catalog</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    display: flex;
+    min-height: 100vh;
+    background: #f9f9f9;
+  }
+  main {
+    flex: 1;
+    padding: 20px;
+    max-width: calc(100% - 250px);
+    box-sizing: border-box;
+  }
+  .tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .tab {
+    padding: 8px 16px;
+    background: #eee;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .tab.active {
+    background: #4285f4;
+    color: white;
+  }
+  #searchInput {
+    padding: 8px;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  .product-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .product {
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 14px;
+  }
+  .product img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  .product-info {
+    margin-top: 8px;
+    flex-grow: 1;
+  }
+  .product-actions {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .product-actions button {
+    background: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .product-actions button:hover {
+    background: #2a64c7;
+  }
+  .pagination {
+    margin-top: 20px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .pagination button {
+    padding: 6px 12px;
+    border: 1px solid #4285f4;
+    background: white;
+    color: #4285f4;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .pagination button.active {
+    background: #4285f4;
+    color: white;
+  }
+  aside.sidebar {
+    width: 250px;
+    background: #fff;
+    border-left: 1px solid #ddd;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+  aside.sidebar h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  aside.sidebar a {
+    color: #4285f4;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  aside.sidebar a:hover {
+    text-decoration: underline;
+  }
 
-    header {
-      background-color: #111;
-      color: white;
-      padding: 1rem 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 1.8rem;
-      font-weight: bold;
-      user-select: none;
-    }
+  /* Modal styles for Add/Edit form */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+  }
+  .modal.active {
+    display: flex;
+  }
+  .modal-content {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 350px;
+    max-width: 90vw;
+    box-sizing: border-box;
+    position: relative;
+  }
+  .modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 12px;
+  }
+  .modal-content label {
+    display: block;
+    margin-top: 12px;
+    font-weight: 600;
+  }
+  .modal-content input,
+  .modal-content select,
+  .modal-content textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    resize: vertical;
+  }
+  .modal-content textarea {
+    min-height: 60px;
+  }
+  .modal-content button {
+    margin-top: 16px;
+    width: 100%;
+    background: #4285f4;
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .modal-content button:disabled {
+    background: #a2c2f7;
+    cursor: not-allowed;
+  }
+  .close-btn {
+    position: absolute;
+    top: 8px; right: 12px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #888;
+  }
+  .close-btn:hover {
+    color: #000;
+  }
 
-    /* Admin button */
-    #adminToggleBtn {
-      background: #333;
-      border: none;
-      color: white;
-      padding: 0.4rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      display: none; /* hidden by default */
-      user-select: none;
-    }
-    #adminToggleBtn:hover {
-      background: #555;
-    }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin: 1rem 0 2rem;
-      flex-wrap: wrap;
-    }
-    .tab {
-      padding: 0.5rem 1.5rem;
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.25s, color 0.25s;
-      user-select: none;
-    }
-    .tab.active {
-      background-color: #111;
-      color: white;
-      font-weight: 600;
-    }
-
-    /* Main container: product list + sidebar */
-    .main-content {
-      flex: 1;
-      display: flex;
-      max-width: 1200px;
-      margin: 0 auto 2rem;
-      gap: 2rem;
-      padding: 0 1rem;
-      width: 100%;
-    }
-
-    /* Product grid */
-    .product-list {
-      flex: 1 1 0;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-    }
-
-    .product {
-      background: white;
-      padding: 0.8rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 7px rgb(0 0 0 / 0.08);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: transform 0.2s ease;
-      cursor: default;
-    }
-    .product:hover {
-      transform: translateY(-5px);
-    }
-    .product img {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 0.5rem;
-      user-select: none;
-    }
-    .product-info {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #222;
-      line-height: 1.3;
-    }
-    .product-info strong {
-      display: block;
-      font-size: 1rem;
-      margin-bottom: 0.2rem;
-    }
-    .product-actions {
-      margin-top: 0.5rem;
-      display: flex;
-      gap: 0.4rem;
-    }
-    .product-actions button {
-      background-color: #111;
-      color: white;
-      border: none;
-      padding: 0.3rem 0.7rem;
-      border-radius: 5px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-    .product-actions button:hover {
-      background-color: #333;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      width: 320px;
-      background: white;
-      padding: 1rem 1.25rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      user-select: none;
-    }
-
-    /* Sidebar links */
-    .sidebar-links {
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 1rem;
-    }
-    .sidebar-links h2 {
-      margin: 0 0 1rem;
-      font-size: 1.2rem;
-      color: #111;
-    }
-    .sidebar-links a {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: #111;
-      text-decoration: none;
-      font-weight: 600;
-      transition: color 0.2s;
-    }
-    .sidebar-links a:hover {
-      color: #555;
-    }
-
-    /* Pagination */
-    .pagination {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      margin: 1rem 0 0;
-    }
-    .pagination button {
-      background: white;
-      border: 1px solid #ddd;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.2s, border-color 0.2s;
-      user-select: none;
-    }
-    .pagination button.active {
-      background-color: #111;
-      color: white;
-      border-color: #111;
-    }
-    .pagination button:hover:not(.active) {
-      background-color: #eee;
-    }
-
-    /* Modal Background */
-    #productFormModal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    #productFormModal.active {
-      display: flex;
-    }
-
-    /* Modal content */
-    #productFormContainer {
-      background: white;
-      border-radius: 10px;
-      padding: 2rem;
-      width: 400px;
-      max-width: 90vw;
-      box-shadow: 0 10px 30px rgb(0 0 0 / 0.3);
-      position: relative;
-    }
-
-    #productFormContainer h2 {
-      margin-top: 0;
-      user-select: text;
-    }
-
-    /* Close button */
-    #closeFormBtn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: transparent;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #999;
-      user-select: none;
-      transition: color 0.2s;
-    }
-    #closeFormBtn:hover {
-      color: #333;
-    }
-
-    /* Form styles */
-    form#productForm {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    form#productForm label {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 0.15rem;
-      user-select: text;
-    }
-    form#productForm input,
-    form#productForm textarea,
-    form#productForm select {
-      padding: 0.5rem 0.6rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      width: 100%;
-      resize: vertical;
-      font-family: inherit;
-    }
-    form#productForm textarea {
-      min-height: 60px;
-    }
-    form#productForm button {
-      background-color: #111;
-      color: white;
-      border: none;
-      padding: 0.6rem;
-      font-size: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.25s;
-      margin-top: 0.5rem;
-      user-select: none;
-    }
-    form#productForm button:disabled {
-      background-color: #666;
-      cursor: default;
-    }
-    form#productForm button:hover:not(:disabled) {
-      background-color: #333;
-    }
-
-    /* Responsive tweaks */
-    @media (max-width: 1120px) {
-      .product-list {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      .sidebar {
-        width: 280px;
-      }
-    }
-    @media (max-width: 800px) {
-      .main-content {
-        flex-direction: column;
-        align-items: center;
-      }
-      .product-list {
-        grid-template-columns: repeat(2, 1fr);
-        max-width: 600px;
-      }
-      .sidebar {
-        width: 100%;
-      }
-    }
-    @media (max-width: 480px) {
-      .product-list {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  /* Add Product button visible only for admin */
+  #addProductBtn {
+    margin-bottom: 20px;
+    padding: 10px 18px;
+    font-size: 16px;
+    background: #34a853;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: none;
+  }
+  #addProductBtn:hover {
+    background: #2c8c43;
+  }
+</style>
 </head>
 <body>
-  <header>
-    Product Catalog
-    <button id="adminToggleBtn" title="Add / Edit Products">Add / Edit Product</button>
-  </header>
 
-  <div class="tabs" role="tablist" aria-label="Product Categories">
-    <div class="tab active" role="tab" tabindex="0" data-category="all">All</div>
-    <div class="tab" role="tab" tabindex="0" data-category="Best Sellers">Best Sellers</div>
-    <div class="tab" role="tab" tabindex="0" data-category="Flower">Flower</div>
-    <div class="tab" role="tab" tabindex="0" data-category="Concentrates">Concentrates</div>
-    <div class="tab" role="tab" tabindex="0" data-category="Carts">Carts</div>
-    <div class="tab" role="tab" tabindex="0" data-category="Disposables">Disposables</div>
-    <div class="tab" role="tab" tabindex="0" data-category="Edibles">Edibles</div>
-    <div class="tab" role="tab" tabindex="0" data-category="Miscellaneous">Miscellaneous</div>
+<main>
+  <button id="addProductBtn">Add New Product</button>
+  <div class="tabs">
+    <div class="tab active" data-category="all">All</div>
+    <div class="tab" data-category="Best Sellers">Best Sellers</div>
+    <div class="tab" data-category="Flower">Flower</div>
+    <div class="tab" data-category="Concentrates">Concentrates</div>
+    <div class="tab" data-category="Carts">Carts</div>
+    <div class="tab" data-category="Disposables">Disposables</div>
+    <div class="tab" data-category="Edibles">Edibles</div>
+    <div class="tab" data-category="Miscellaneous">Miscellaneous</div>
   </div>
+  <input type="search" id="searchInput" placeholder="Search products..." />
+  <div class="product-list"></div>
+  <div class="pagination"></div>
+</main>
 
-  <div class="main-content">
-    <!-- Product List -->
-    <div class="product-list" aria-live="polite" aria-atomic="true"></div>
+<aside class="sidebar">
+  <h3>Useful Links</h3>
+  <a href="https://t.me/yourtelegram" target="_blank" rel="noopener noreferrer">Telegram Channel</a>
+  <!-- Add more links as needed -->
+</aside>
 
-    <!-- Sidebar (links only) -->
-    <aside class="sidebar" aria-label="Sidebar">
-      <nav class="sidebar-links" aria-label="Useful links">
-        <h2>Links</h2>
-        <a href="https://t.me/yourtelegram" target="_blank" rel="noopener noreferrer">Telegram</a>
-        <a href="https://example.com/another-link" target="_blank" rel="noopener noreferrer">Another Link</a>
-        <!-- Add more links as needed -->
-      </nav>
-    </aside>
+<!-- Add/Edit Product Modal -->
+<div class="modal" id="productModal" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+  <div class="modal-content">
+    <span class="close-btn" id="modalCloseBtn" title="Close">&times;</span>
+    <h2 id="formTitle">Add New Product</h2>
+    <label for="productName">Name</label>
+    <input id="productName" type="text" />
+    <label for="productBrand">Brand</label>
+    <input id="productBrand" type="text" />
+    <label for="productDescription">Description</label>
+    <textarea id="productDescription"></textarea>
+    <label for="productPrice">Price</label>
+    <input id="productPrice" type="number" step="0.01" min="0" />
+    <label for="productImage">Image URL</label>
+    <input id="productImage" type="url" />
+    <label for="productCategory">Category</label>
+    <select id="productCategory">
+      <option>Best Sellers</option>
+      <option>Flower</option>
+      <option>Concentrates</option>
+      <option>Carts</option>
+      <option>Disposables</option>
+      <option>Edibles</option>
+      <option>Miscellaneous</option>
+    </select>
+    <button id="saveProduct">Add Product</button>
   </div>
+</div>
 
-  <!-- Modal Add/Edit Form -->
-  <div id="productFormModal" role="dialog" aria-modal="true" aria-labelledby="formTitle">
-    <div id="productFormContainer">
-      <button id="closeFormBtn" aria-label="Close form">&times;</button>
-      <form id="productForm" aria-label="Add or edit product form">
-        <h2 id="formTitle">Add New Product</h2>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    doc,
+    updateDoc,
+    deleteDoc,
+    query,
+    orderBy,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        <label for="productName">Product Name</label>
-        <input type="text" id="productName" autocomplete="off" required />
+  const firebaseConfig = {
+    apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
+    authDomain: "project-3390921463634312663.firebaseapp.com",
+    projectId: "project-3390921463634312663",
+    storageBucket: "project-3390921463634312663.appspot.com",
+    messagingSenderId: "451857573630",
+    appId: "1:451857573630:web:94f4ee25f65ef4967ae7af"
+  };
 
-        <label for="productBrand">Brand</label>
-        <input type="text" id="productBrand" autocomplete="off" required />
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-        <label for="productDescription">Description</label>
-        <textarea id="productDescription" required></textarea>
+  // Admin check (replace with your email)
+  const ADMIN_EMAIL = "your.email@example.com";
 
-        <label for="productPrice">Price ($)</label>
-        <input type="number" id="productPrice" min="0" step="0.01" required />
+  // Simple user email check simulation (replace with your auth logic)
+  // Here we simulate a logged-in user email by prompt for demo.
+  // Replace this with your real auth check or remove for public view.
+  let currentUserEmail = null;
 
-        <label for="productImage">Image URL</label>
-        <input type="url" id="productImage" autocomplete="off" required />
-
-        <label for="productCategory">Category</label>
-        <select id="productCategory" required>
-          <option value="Best Sellers">Best Sellers</option>
-          <option value="Flower">Flower</option>
-          <option value="Concentrates">Concentrates</option>
-          <option value="Carts">Carts</option>
-          <option value="Disposables">Disposables</option>
-          <option value="Edibles">Edibles</option>
-          <option value="Miscellaneous">Miscellaneous</option>
-        </select>
-
-        <button type="submit" id="saveProduct">Add Product</button>
-      </form>
-    </div>
-  </div>
-
-  <div class="pagination" aria-label="Pagination"></div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      getDocs,
-      doc,
-      updateDoc,
-      deleteDoc,
-      query,
-      orderBy,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
-      authDomain: "project-3390921463634312663.firebaseapp.com",
-      projectId: "project-3390921463634312663",
-      storageBucket: "project-3390921463634312663.appspot.com",
-      messagingSenderId: "451857573630",
-      appId: "1:451857573630:web:94f4ee25f65ef4967ae7af"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const productList = document.querySelector(".product-list");
-    const saveBtn = document.getElementById("saveProduct");
-    const formTitle = document.getElementById("formTitle");
-
-    const productName = document.getElementById("productName");
-    const productBrand = document.getElementById("productBrand");
-    const productDescription = document.getElementById("productDescription");
-    const productPrice = document.getElementById("productPrice");
-    const productImage = document.getElementById("productImage");
-    const productCategory = document.getElementById("productCategory");
-
-    const tabs = document.querySelectorAll(".tab");
-    const searchInput = document.getElementById("searchInput");
-    const paginationContainer = document.querySelector(".pagination");
-
-    const PRODUCTS_PER_PAGE = 5;
-    let currentPage = 1;
-    let products = [];
-    let filteredProducts = [];
-    let editProductId = null;
-    let currentCategory = "all";
-
-    async function fetchProducts() {
-      try {
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        const snapshot = await getDocs(q);
-        products = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        applyFilters();
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        productList.innerHTML = "<p style='color:red;'>Error loading products.</p>";
-      }
+  async function askForUserEmail() {
+    currentUserEmail = prompt("Enter your admin email (for demo only):", "")?.trim().toLowerCase();
+    if (currentUserEmail === ADMIN_EMAIL.toLowerCase()) {
+      document.getElementById("addProductBtn").style.display = "inline-block";
     }
+  }
 
-    function applyFilters() {
-      filteredProducts = products.filter(product => {
-        const matchCategory = currentCategory === "all" || product.category === currentCategory;
-        const searchTerm = searchInput.value.trim().toLowerCase();
-        const matchSearch = product.name.toLowerCase().includes(searchTerm);
-        return matchCategory && matchSearch;
-      });
-      currentPage = 1;
-      renderProducts();
-      renderPagination();
-    }
+  // UI elements
+  const productList = document.querySelector(".product-list");
+  const saveBtn = document.getElementById("saveProduct");
+  const formTitle = document.getElementById("formTitle");
+  const addProductBtn = document.getElementById("addProductBtn");
+  const productModal = document.getElementById("productModal");
+  const modalCloseBtn = document.getElementById("modalCloseBtn");
 
-    function renderProducts() {
-      productList.innerHTML = "";
-      if (filteredProducts.length === 0) {
-        productList.innerHTML = "<p>No products found.</p>";
-        return;
-      }
-      const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
-      const end = start + PRODUCTS_PER_PAGE;
-      const pageProducts = filteredProducts.slice(start, end);
+  const productName = document.getElementById("productName");
+  const productBrand = document.getElementById("productBrand");
+  const productDescription = document.getElementById("productDescription");
+  const productPrice = document.getElementById("productPrice");
+  const productImage = document.getElementById("productImage");
+  const productCategory = document.getElementById("productCategory");
 
-      pageProducts.forEach(product => {
-        const productCard = document.createElement("div");
-        productCard.className = "product";
+  const tabs = document.querySelectorAll(".tab");
+  const searchInput = document.getElementById("searchInput");
+  const paginationContainer = document.querySelector(".pagination");
 
-        productCard.innerHTML = `
-          <img src="${product.image || "https://via.placeholder.com/250x160?text=No+Image"}" alt="${product.name}">
-          <div class="product-info">
-            <strong>${product.name}</strong><br>
-            Brand: ${product.brand}<br>
-            $${product.price.toFixed(2)}<br>
-            Category: ${product.category}
-          </div>
-          <div class="product-actions">
-            <button class="edit-btn" data-id="${product.id}">Edit</button>
-            <button class="delete-btn" data-id="${product.id}">Delete</button>
-          </div>
-        `;
-        productList.appendChild(productCard);
-      });
+  const PRODUCTS_PER_PAGE = 16; // 4x4 grid
+  let currentPage = 1;
+  let products = [];
+  let filteredProducts = [];
+  let editProductId = null;
+  let currentCategory = "all";
 
-      // Edit & Delete Buttons
-      document.querySelectorAll(".edit-btn").forEach(btn => {
-        btn.addEventListener("click", () => startEditProduct(btn.dataset.id));
-      });
-      document.querySelectorAll(".delete-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          if (confirm("Are you sure you want to delete this product?")) {
-            deleteProduct(btn.dataset.id);
-          }
-        });
-      });
-    }
+  function openModal() {
+    productModal.classList.add("active");
+  }
+  function closeModal() {
+    productModal.classList.remove("active");
+    clearForm();
+    editProductId = null;
+    formTitle.textContent = "Add New Product";
+    saveBtn.textContent = "Add Product";
+  }
 
-    function renderPagination() {
-      paginationContainer.innerHTML = "";
-      const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
-      if (totalPages <= 1) return;
+  addProductBtn.addEventListener("click", () => {
+    openModal();
+  });
+  modalCloseBtn.addEventListener("click", closeModal);
+  productModal.addEventListener("click", (e) => {
+    if (e.target === productModal) closeModal();
+  });
 
-      for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement("button");
-        btn.textContent = i;
-        btn.className = i === currentPage ? "active" : "";
-        btn.addEventListener("click", () => {
-          currentPage = i;
-          renderProducts();
-          renderPagination();
-        });
-        paginationContainer.appendChild(btn);
-      }
-    }
-
-    function clearForm() {
-      productName.value = "";
-      productBrand.value = "";
-      productDescription.value = "";
-      productPrice.value = "";
-      productImage.value = "";
-      productCategory.value = "Best Sellers";
-    }
-
-    function startEditProduct(id) {
-      const product = products.find(p => p.id === id);
-      if (!product) return;
-
-      editProductId = id;
-      formTitle.textContent = "Edit Product";
-      saveBtn.textContent = "Save Changes";
-
-      productName.value = product.name;
-      productBrand.value = product.brand;
-      productDescription.value = product.description;
-      productPrice.value = product.price;
-      productImage.value = product.image;
-      productCategory.value = product.category;
-    }
-
-    async function saveProduct() {
-      const name = productName.value.trim();
-      const brand = productBrand.value.trim();
-      const description = productDescription.value.trim();
-      const price = parseFloat(productPrice.value);
-      const image = productImage.value.trim();
-      const category = productCategory.value;
-
-      if (!name || !brand || !description || isNaN(price) || price < 0 || !image || !category) {
-        alert("Please fill all fields correctly.");
-        return;
-      }
-
-      saveBtn.disabled = true;
-      saveBtn.textContent = editProductId ? "Saving..." : "Adding...";
-
-      try {
-        if (editProductId) {
-          const productRef = doc(db, "products", editProductId);
-          await updateDoc(productRef, {
-            name,
-            brand,
-            description,
-            price,
-            image,
-            category,
-            updatedAt: serverTimestamp()
-          });
-        } else {
-          await addDoc(collection(db, "products"), {
-            name,
-            brand,
-            description,
-            price,
-            image,
-            category,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-          });
-        }
-
-        await fetchProducts();
-        clearForm();
-        editProductId = null;
-        formTitle.textContent = "Add New Product";
-        saveBtn.textContent = "Add Product";
-      } catch (error) {
-        console.error("Error saving product:", error);
-        alert("Failed to save product. Please try again.");
-      } finally {
-        saveBtn.disabled = false;
-      }
-    }
-
-    async function deleteProduct(id) {
-      try {
-        await deleteDoc(doc(db, "products", id));
-        products = products.filter(p => p.id !== id);
-        applyFilters();
-      } catch (error) {
-        console.error("Error deleting product:", error);
-        alert("Failed to delete product. Please try again.");
-      }
-    }
-
-    tabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-        tabs.forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        currentCategory = tab.dataset.category;
-        applyFilters();
-      });
-    });
-
-    searchInput.addEventListener("input", () => {
+  async function fetchProducts() {
+    try {
+      const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+      const snapshot = await getDocs(q);
+      products = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
       applyFilters();
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      productList.innerHTML = "<p style='color:red;'>Error loading products.</p>";
+    }
+  }
+
+  function applyFilters() {
+    filteredProducts = products.filter(product => {
+      const matchCategory = currentCategory === "all" || product.category === currentCategory;
+      const searchTerm = searchInput.value.trim().toLowerCase();
+      const matchSearch = product.name.toLowerCase().includes(searchTerm);
+      return matchCategory && matchSearch;
     });
-
-    saveBtn.addEventListener("click", saveProduct);
-
-    fetchProducts();
-  </script>
-</body>
-</html>
+    currentPage = 1;
+    renderProducts();
+    renderPagination();
