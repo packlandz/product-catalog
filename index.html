@@ -1,260 +1,400 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Product Catalog</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0; 
-    padding: 20px; 
-    background: #f9f9f9;
-  }
-  header {
-    text-align: center;
-    margin-bottom: 15px;
-  }
-  /* Tabs */
-  .tabs {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-    gap: 15px;
-  }
-  .tab {
-    padding: 8px 16px;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    font-weight: bold;
-    color: #555;
-  }
-  .tab.active {
-    border-color: #007bff;
-    color: #007bff;
-  }
-  /* Container with main and sidebar */
-  .container {
-    display: flex;
-    gap: 20px;
-  }
-  /* Main content */
-  .main-content {
-    flex: 1;
-  }
-  /* Sidebar */
-  .sidebar {
-    width: 200px;
-    background: #fff;
-    border: 1px solid #ddd;
-    padding: 15px;
-    box-shadow: 0 0 6px rgba(0,0,0,0.05);
-  }
-  .sidebar h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 1.1em;
-  }
-  .sidebar a {
-    display: block;
-    margin-bottom: 8px;
-    color: #007bff;
-    text-decoration: none;
-  }
-  .sidebar a:hover {
-    text-decoration: underline;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Product Catalog with Admin Form</title>
+  <style>
+    /* Base styles & reset */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-  /* Form */
-  form {
-    background: white;
-    padding: 15px;
-    border: 1px solid #ddd;
-    margin-bottom: 20px;
-    max-width: 600px;
-  }
-  form label {
-    display: block;
-    margin: 8px 0 4px;
-    font-weight: bold;
-  }
-  form input, form select, form textarea {
-    width: 100%;
-    padding: 6px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    box-sizing: border-box;
-  }
-  form textarea {
-    resize: vertical;
-  }
-  form button {
-    margin-top: 12px;
-    padding: 10px 16px;
-    background: #007bff;
-    border: none;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 3px;
-  }
-  form button:disabled {
-    background: #999;
-    cursor: not-allowed;
-  }
+    header {
+      background-color: #111;
+      color: white;
+      padding: 1rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 1.8rem;
+      font-weight: bold;
+      user-select: none;
+    }
 
-  /* Search */
-  #searchInput {
-    width: 300px;
-    padding: 8px;
-    margin-bottom: 20px;
-    border-radius: 3px;
-    border: 1px solid #ccc;
-  }
+    /* Admin button */
+    #adminToggleBtn {
+      background: #333;
+      border: none;
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: none; /* hidden by default */
+      user-select: none;
+    }
+    #adminToggleBtn:hover {
+      background: #555;
+    }
 
-  /* Products grid 4x4 */
-  .product-list {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-  }
-  .product {
-    background: white;
-    border: 1px solid #ddd;
-    padding: 10px;
-    box-sizing: border-box;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .product img {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    margin-bottom: 8px;
-    border-radius: 3px;
-  }
-  .product-info {
-    font-size: 0.9em;
-    color: #333;
-    flex-grow: 1;
-  }
-  .product-actions {
-    margin-top: 8px;
-    display: flex;
-    justify-content: space-between;
-  }
-  .product-actions button {
-    padding: 5px 10px;
-    font-size: 0.8em;
-    cursor: pointer;
-    border: none;
-    border-radius: 3px;
-  }
-  .edit-btn {
-    background: #ffc107;
-    color: #333;
-  }
-  .delete-btn {
-    background: #dc3545;
-    color: white;
-  }
+    /* Tabs */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1rem 0 2rem;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 0.5rem 1.5rem;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.25s, color 0.25s;
+      user-select: none;
+    }
+    .tab.active {
+      background-color: #111;
+      color: white;
+      font-weight: 600;
+    }
 
-  /* Pagination */
-  .pagination {
-    margin-top: 15px;
-    text-align: center;
-  }
-  .pagination button {
-    margin: 0 3px;
-    padding: 6px 12px;
-    border: 1px solid #007bff;
-    background: white;
-    color: #007bff;
-    cursor: pointer;
-    border-radius: 3px;
-  }
-  .pagination button.active {
-    background: #007bff;
-    color: white;
-  }
+    /* Main container: product list + sidebar */
+    .main-content {
+      flex: 1;
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto 2rem;
+      gap: 2rem;
+      padding: 0 1rem;
+      width: 100%;
+    }
 
-</style>
+    /* Product grid */
+    .product-list {
+      flex: 1 1 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .product {
+      background: white;
+      padding: 0.8rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 7px rgb(0 0 0 / 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s ease;
+      cursor: default;
+    }
+    .product:hover {
+      transform: translateY(-5px);
+    }
+    .product img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      user-select: none;
+    }
+    .product-info {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #222;
+      line-height: 1.3;
+    }
+    .product-info strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+    .product-actions {
+      margin-top: 0.5rem;
+      display: flex;
+      gap: 0.4rem;
+    }
+    .product-actions button {
+      background-color: #111;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.7rem;
+      border-radius: 5px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .product-actions button:hover {
+      background-color: #333;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 320px;
+      background: white;
+      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      user-select: none;
+    }
+
+    /* Sidebar links */
+    .sidebar-links {
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 1rem;
+    }
+    .sidebar-links h2 {
+      margin: 0 0 1rem;
+      font-size: 1.2rem;
+      color: #111;
+    }
+    .sidebar-links a {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #111;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .sidebar-links a:hover {
+      color: #555;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1rem 0 0;
+    }
+    .pagination button {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.2s, border-color 0.2s;
+      user-select: none;
+    }
+    .pagination button.active {
+      background-color: #111;
+      color: white;
+      border-color: #111;
+    }
+    .pagination button:hover:not(.active) {
+      background-color: #eee;
+    }
+
+    /* Modal Background */
+    #productFormModal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    #productFormModal.active {
+      display: flex;
+    }
+
+    /* Modal content */
+    #productFormContainer {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      width: 400px;
+      max-width: 90vw;
+      box-shadow: 0 10px 30px rgb(0 0 0 / 0.3);
+      position: relative;
+    }
+
+    #productFormContainer h2 {
+      margin-top: 0;
+      user-select: text;
+    }
+
+    /* Close button */
+    #closeFormBtn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #999;
+      user-select: none;
+      transition: color 0.2s;
+    }
+    #closeFormBtn:hover {
+      color: #333;
+    }
+
+    /* Form styles */
+    form#productForm {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    form#productForm label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+      user-select: text;
+    }
+    form#productForm input,
+    form#productForm textarea,
+    form#productForm select {
+      padding: 0.5rem 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      width: 100%;
+      resize: vertical;
+      font-family: inherit;
+    }
+    form#productForm textarea {
+      min-height: 60px;
+    }
+    form#productForm button {
+      background-color: #111;
+      color: white;
+      border: none;
+      padding: 0.6rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.25s;
+      margin-top: 0.5rem;
+      user-select: none;
+    }
+    form#productForm button:disabled {
+      background-color: #666;
+      cursor: default;
+    }
+    form#productForm button:hover:not(:disabled) {
+      background-color: #333;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 1120px) {
+      .product-list {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .sidebar {
+        width: 280px;
+      }
+    }
+    @media (max-width: 800px) {
+      .main-content {
+        flex-direction: column;
+        align-items: center;
+      }
+      .product-list {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 600px;
+      }
+      .sidebar {
+        width: 100%;
+      }
+    }
+    @media (max-width: 480px) {
+      .product-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
+  <header>
+    Product Catalog
+    <button id="adminToggleBtn" title="Add / Edit Products">Add / Edit Product</button>
+  </header>
 
-<header>
-  <h1>Product Catalog</h1>
-</header>
+  <div class="tabs" role="tablist" aria-label="Product Categories">
+    <div class="tab active" role="tab" tabindex="0" data-category="all">All</div>
+    <div class="tab" role="tab" tabindex="0" data-category="Best Sellers">Best Sellers</div>
+    <div class="tab" role="tab" tabindex="0" data-category="Flower">Flower</div>
+    <div class="tab" role="tab" tabindex="0" data-category="Concentrates">Concentrates</div>
+    <div class="tab" role="tab" tabindex="0" data-category="Carts">Carts</div>
+    <div class="tab" role="tab" tabindex="0" data-category="Disposables">Disposables</div>
+    <div class="tab" role="tab" tabindex="0" data-category="Edibles">Edibles</div>
+    <div class="tab" role="tab" tabindex="0" data-category="Miscellaneous">Miscellaneous</div>
+  </div>
 
-<!-- Tabs for categories -->
-<div class="tabs">
-  <div class="tab active" data-category="all">All</div>
-  <div class="tab" data-category="Best Sellers">Best Sellers</div>
-  <div class="tab" data-category="Flower">Flower</div>
-  <div class="tab" data-category="Concentrates">Concentrates</div>
-  <div class="tab" data-category="Carts">Carts</div>
-  <div class="tab" data-category="Disposables">Disposables</div>
-  <div class="tab" data-category="Edibles">Edibles</div>
-  <div class="tab" data-category="Miscellaneous">Miscellaneous</div>
-</div>
+  <div class="main-content">
+    <!-- Product List -->
+    <div class="product-list" aria-live="polite" aria-atomic="true"></div>
 
-<div class="container">
+    <!-- Sidebar (links only) -->
+    <aside class="sidebar" aria-label="Sidebar">
+      <nav class="sidebar-links" aria-label="Useful links">
+        <h2>Links</h2>
+        <a href="https://t.me/yourtelegram" target="_blank" rel="noopener noreferrer">Telegram</a>
+        <a href="https://example.com/another-link" target="_blank" rel="noopener noreferrer">Another Link</a>
+        <!-- Add more links as needed -->
+      </nav>
+    </aside>
+  </div>
 
-  <main class="main-content">
-    <!-- Add/Edit Product Form -->
-    <form id="productForm" style="display:none;">
-      <h2 id="formTitle">Add New Product</h2>
+  <!-- Modal Add/Edit Form -->
+  <div id="productFormModal" role="dialog" aria-modal="true" aria-labelledby="formTitle">
+    <div id="productFormContainer">
+      <button id="closeFormBtn" aria-label="Close form">&times;</button>
+      <form id="productForm" aria-label="Add or edit product form">
+        <h2 id="formTitle">Add New Product</h2>
 
-      <label for="productName">Name</label>
-      <input type="text" id="productName" required />
+        <label for="productName">Product Name</label>
+        <input type="text" id="productName" autocomplete="off" required />
 
-      <label for="productBrand">Brand</label>
-      <input type="text" id="productBrand" required />
+        <label for="productBrand">Brand</label>
+        <input type="text" id="productBrand" autocomplete="off" required />
 
-      <label for="productDescription">Description</label>
-      <textarea id="productDescription" rows="3" required></textarea>
+        <label for="productDescription">Description</label>
+        <textarea id="productDescription" required></textarea>
 
-      <label for="productPrice">Price</label>
-      <input type="number" step="0.01" id="productPrice" required />
+        <label for="productPrice">Price ($)</label>
+        <input type="number" id="productPrice" min="0" step="0.01" required />
 
-      <label for="productImage">Image URL</label>
-      <input type="url" id="productImage" required />
+        <label for="productImage">Image URL</label>
+        <input type="url" id="productImage" autocomplete="off" required />
 
-      <label for="productCategory">Category</label>
-      <select id="productCategory" required>
-        <option>Best Sellers</option>
-        <option>Flower</option>
-        <option>Concentrates</option>
-        <option>Carts</option>
-        <option>Disposables</option>
-        <option>Edibles</option>
-        <option>Miscellaneous</option>
-      </select>
+        <label for="productCategory">Category</label>
+        <select id="productCategory" required>
+          <option value="Best Sellers">Best Sellers</option>
+          <option value="Flower">Flower</option>
+          <option value="Concentrates">Concentrates</option>
+          <option value="Carts">Carts</option>
+          <option value="Disposables">Disposables</option>
+          <option value="Edibles">Edibles</option>
+          <option value="Miscellaneous">Miscellaneous</option>
+        </select>
 
-      <button type="button" id="saveProduct">Add Product</button>
-    </form>
+        <button type="submit" id="saveProduct">Add Product</button>
+      </form>
+    </div>
+  </div>
 
-    <!-- Search -->
-    <input type="text" id="searchInput" placeholder="Search products..." />
-
-    <!-- Products Grid -->
-    <div class="product-list"></div>
-
-    <!-- Pagination -->
-    <div class="pagination"></div>
-  </main>
-
-  <!-- Sidebar with links -->
-  <aside class="sidebar">
-    <h3>Useful Links</h3>
-    <a href="https://t.me/yourtelegram" target="_blank" rel="noopener noreferrer">Telegram</a>
-    <a href="https://example.com/anotherlink" target="_blank" rel="noopener noreferrer">Another Link</a>
-    <!-- Add more links as you want -->
-  </aside>
-
-</div>
+  <div class="pagination" aria-label="Pagination"></div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
