@@ -69,6 +69,15 @@
       text-align: center;
     }
 
+    /* Added style for description */
+    .card .description {
+      font-size: 13px;
+      color: #ccc;
+      margin: 5px 0 10px 0;
+      text-align: center;
+      flex-grow: 1;
+    }
+
     .card p {
       margin: 5px 0;
       font-size: 14px;
@@ -105,13 +114,20 @@
       border-radius: 12px;
     }
 
-    #adminForm input, #adminForm select, #adminForm button {
+    #adminForm input, #adminForm select, #adminForm button, #adminForm textarea {
       display: block;
       margin: 10px 0;
       padding: 10px;
       width: 100%;
       border: none;
       border-radius: 8px;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Make description textarea smaller */
+    #productDescription {
+      resize: vertical;
+      height: 60px;
     }
 
     .sidebar {
@@ -163,7 +179,6 @@
   <div class="main-content">
     <div id="productGrid" class="grid"></div>
     <div class="sidebar">
-      <!-- Added search bar here -->
       <input type="text" id="searchInput" placeholder="Search products..." />
       <a href="https://t.me/your_telegram" target="_blank">Join Telegram</a>
     </div>
@@ -174,6 +189,8 @@
   <form id="adminForm">
     <h3>Add / Edit Product</h3>
     <input type="text" id="productName" placeholder="Product Name" required />
+    <!-- Added description textarea -->
+    <textarea id="productDescription" placeholder="Description"></textarea>
     <input type="text" id="productPrice" placeholder="Price" required />
     <select id="productCategory">
       <option value="Best sellers">Best sellers</option>
@@ -245,6 +262,7 @@
       productGrid.innerHTML = pageProducts.map(p => `
         <div class="card">
           <h3>${p.name}</h3>
+          <div class="description">${p.description || ""}</div>
           <p>${p.price}</p>
           ${p.image ? `<img src="${p.image}" alt="${p.name}" style="max-width:100%; border-radius: 8px; margin-top:10px;">` : ""}
         </div>
@@ -284,11 +302,12 @@
     document.getElementById("adminForm").addEventListener("submit", async e => {
       e.preventDefault();
       const name = document.getElementById("productName").value;
+      const description = document.getElementById("productDescription").value;
       const price = document.getElementById("productPrice").value;
       const category = document.getElementById("productCategory").value;
       const image = document.getElementById("productImage").value;
       try {
-        await addDoc(productsRef, { name, price, category, image });
+        await addDoc(productsRef, { name, description, price, category, image });
         loadProducts();
         e.target.reset();
         alert("Product added!");
