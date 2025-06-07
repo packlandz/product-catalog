@@ -40,11 +40,16 @@
       background: #4caf50;
     }
 
+    .main-content {
+      display: flex;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 20px;
       padding: 20px 10px 20px 60px; /* Shifted left */
+      flex: 1;
     }
 
     .card {
@@ -109,39 +114,22 @@
       border-radius: 8px;
     }
 
-    #telegramLink {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
+    .sidebar {
+      width: 220px;
+      padding: 20px;
+      background-color: #1f1f1f;
+      border-left: 2px solid #2a2a2a;
+    }
+
+    .sidebar a {
+      display: inline-block;
       background: #0088cc;
       color: white;
       padding: 10px 15px;
       border-radius: 20px;
       text-decoration: none;
-    }
-
-    /* RIGHT SIDEBAR STYLES */
-    .right-sidebar {
-      position: fixed;
-      top: 100px;
-      right: 0;
-      width: 220px;
-      background: #1a1a1a;
-      border-left: 1px solid #333;
-      height: calc(100% - 100px);
-      padding: 15px;
-      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .right-sidebar h3 {
-      color: #4caf50;
-      font-size: 18px;
-      margin-top: 0;
-    }
-
-    .right-sidebar p {
-      font-size: 14px;
-      color: #ccc;
+      text-align: center;
+      width: 100%;
     }
   </style>
 </head>
@@ -160,7 +148,13 @@
     </div>
   </header>
 
-  <div id="productGrid" class="grid"></div>
+  <div class="main-content">
+    <div id="productGrid" class="grid"></div>
+    <div class="sidebar">
+      <a href="https://t.me/your_telegram" target="_blank">Join Telegram</a>
+    </div>
+  </div>
+
   <div class="pagination" id="paginationControls"></div>
 
   <form id="adminForm">
@@ -179,15 +173,6 @@
     <input type="text" id="productImage" placeholder="Image URL (optional)" />
     <button type="submit">Save Product</button>
   </form>
-
-  <!-- RIGHT SIDEBAR -->
-  <div class="right-sidebar">
-    <h3>Connect</h3>
-    <p>Follow us on Telegram for latest updates and product drops.</p>
-    <a href="https://t.me/your_telegram" style="color:#4caf50;">@your_telegram</a>
-  </div>
-
-  <a href="https://t.me/your_telegram" id="telegramLink" target="_blank">Join Telegram</a>
 
   <!-- Firebase -->
   <script type="module">
