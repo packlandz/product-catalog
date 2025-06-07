@@ -151,6 +151,19 @@
   <div class="main-content">
     <div id="productGrid" class="grid"></div>
     <div class="sidebar">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search products..."
+        style="
+          width: 100%;
+          padding: 10px;
+          margin-bottom: 15px;
+          border-radius: 8px;
+          border: none;
+          font-size: 14px;
+        "
+      />
       <a href="https://t.me/your_telegram" target="_blank">Join Telegram</a>
     </div>
   </div>
@@ -201,6 +214,7 @@
 
     const productGrid = document.getElementById("productGrid");
     const pagination = document.getElementById("paginationControls");
+    const searchInput = document.getElementById("searchInput");
 
     async function loadProducts() {
       const q = query(productsRef, orderBy("name"));
@@ -213,11 +227,17 @@
     }
 
     function renderProducts() {
-      const filtered = currentCategory === "All"
-        ? allProducts
-        : allProducts.filter(p => p.category === currentCategory);
+      const searchTerm = searchInput.value.toLowerCase();
+
+      // Filter by category and search term
+      const filtered = allProducts.filter(p => {
+        const matchesCategory = currentCategory === "All" || p.category === currentCategory;
+        const matchesSearch = p.name.toLowerCase().includes(searchTerm);
+        return matchesCategory && matchesSearch;
+      });
 
       const totalPages = Math.ceil(filtered.length / productsPerPage);
+      if (currentPage > totalPages) currentPage = 1;
       const start = (currentPage - 1) * productsPerPage;
       const pageProducts = filtered.slice(start, start + productsPerPage);
 
@@ -242,6 +262,12 @@
       }
     }
 
+    // Search input event triggers filtering
+    searchInput.addEventListener("input", () => {
+      currentPage = 1;
+      renderProducts();
+    });
+
     document.getElementById("categoryTabs").addEventListener("click", e => {
       if (e.target.tagName === "BUTTON") {
         currentCategory = e.target.dataset.category;
@@ -257,25 +283,4 @@
       const name = document.getElementById("productName").value;
       const price = document.getElementById("productPrice").value;
       const category = document.getElementById("productCategory").value;
-      const image = document.getElementById("productImage").value;
-      try {
-        await addDoc(productsRef, { name, price, category, image });
-        loadProducts();
-        e.target.reset();
-        alert("Product added!");
-      } catch (err) {
-        console.error("Failed to add product", err);
-      }
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.key === ".") {
-        const form = document.getElementById("adminForm");
-        form.style.display = form.style.display === "block" ? "none" : "block";
-      }
-    });
-
-    loadProducts();
-  </script>
-</body>
-</html>
+      const image = document
