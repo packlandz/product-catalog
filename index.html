@@ -19,116 +19,175 @@
       background: #1f1f1f;
     }
 
-    nav {
+    .tabs {
       display: flex;
       justify-content: center;
-      gap: 20px;
-      padding: 10px;
-      background: #2a2a2a;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 10px;
     }
 
-    nav button {
-      background: none;
+    .tabs button {
+      padding: 10px 15px;
       border: none;
+      background: #2a2a2a;
       color: #fff;
-      font-size: 16px;
+      border-radius: 10px;
       cursor: pointer;
     }
 
-    nav button.active {
-      border-bottom: 2px solid #4caf50;
+    .tabs button.active {
+      background: #4caf50;
     }
 
-    #productGrid {
+    .main-content {
+      display: flex;
+    }
+
+    .grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 20px;
-      padding: 20px;
+      padding: 20px 10px 20px 60px;
+      flex: 1;
     }
 
     .card {
-      background: #1f1f1f;
-      border-radius: 10px;
-      padding: 15px;
+      background: #1e1e1e;
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 16px;
       text-align: center;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .card .description {
+      font-size: 13px;
+      color: #ccc;
+      margin: 5px 0 10px 0;
+      text-align: center;
+      flex-grow: 1;
+    }
+
+    .card p {
+      margin: 5px 0;
+      font-size: 14px;
+      text-align: center;
     }
 
     .card img {
       max-width: 100%;
-      height: auto;
-      border-radius: 10px;
-      margin-top: 10px;
+      max-height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+
+    .pagination {
+      text-align: center;
+      padding: 15px;
+    }
+
+    .pagination button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      background: #333;
+      border: none;
+      color: white;
+      border-radius: 6px;
     }
 
     #adminForm {
       display: none;
-      background: #1f1f1f;
+      background: #1c1c1c;
       padding: 20px;
       margin: 20px;
-      border-radius: 10px;
+      border-radius: 12px;
     }
 
-    #adminForm input, #adminForm select {
-      margin-bottom: 10px;
+    #adminForm input, #adminForm select, #adminForm button, #adminForm textarea {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
       width: 100%;
-      padding: 8px;
-      border-radius: 5px;
       border: none;
+      border-radius: 8px;
+      font-family: Arial, sans-serif;
     }
 
-    #pagination {
-      text-align: center;
+    #productDescription {
+      resize: vertical;
+      height: 60px;
+    }
+
+    .sidebar {
+      width: 220px;
       padding: 20px;
+      background-color: #1f1f1f;
+      border-left: 2px solid #2a2a2a;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
-    #pagination button {
-      background: #333;
-      color: #fff;
-      border: none;
-      padding: 5px 10px;
-      margin: 0 5px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    #pagination button:hover {
-      background: #4caf50;
+    .sidebar a {
+      display: inline-block;
+      background: #0088cc;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 20px;
+      text-decoration: none;
+      text-align: center;
+      width: 100%;
     }
 
     #searchInput {
-      display: block;
-      margin: 10px auto;
-      padding: 8px;
-      width: 60%;
-      border-radius: 5px;
+      padding: 8px 12px;
+      border-radius: 12px;
       border: none;
-    }
-
-    .description {
-      font-size: 0.9em;
-      color: #bbb;
-      margin-top: 5px;
+      font-size: 14px;
+      outline: none;
     }
   </style>
 </head>
 <body>
   <header>
     <h1>Product Catalog</h1>
-    <input type="text" id="searchInput" placeholder="Search products...">
+    <div class="tabs" id="categoryTabs">
+      <button data-category="All" class="active">All</button>
+      <button data-category="Best sellers">Best sellers</button>
+      <button data-category="Flower">Flower</button>
+      <button data-category="Concentrates">Concentrates</button>
+      <button data-category="Carts">Carts</button>
+      <button data-category="Disposables">Disposables</button>
+      <button data-category="Edibles">Edibles</button>
+      <button data-category="Miscellaneous">Miscellaneous</button>
+    </div>
   </header>
 
-  <nav id="categoryTabs">
-    <!-- Category buttons will be dynamically inserted here -->
-  </nav>
+  <div class="main-content">
+    <div id="productGrid" class="grid"></div>
+    <div class="sidebar">
+      <input type="text" id="searchInput" placeholder="Search products..." />
+      <a href="https://t.me/your_telegram" target="_blank">Join Telegram</a>
+    </div>
+  </div>
 
-  <main id="productGrid"></main>
-  <div id="pagination"></div>
+  <div class="pagination" id="paginationControls"></div>
 
   <form id="adminForm">
-    <input id="productName" placeholder="Name" required />
-    <input id="productDescription" placeholder="Description" />
-    <input id="productPrice" placeholder="Price" required />
+    <h3>Add / Edit Product</h3>
+    <input type="text" id="productName" placeholder="Product Name" required />
+    <textarea id="productDescription" placeholder="Description"></textarea>
+    <input type="text" id="productPrice" placeholder="Price" required />
     <select id="productCategory">
       <option value="Best sellers">Best sellers</option>
       <option value="Flower">Flower</option>
@@ -138,22 +197,14 @@
       <option value="Edibles">Edibles</option>
       <option value="Miscellaneous">Miscellaneous</option>
     </select>
-    <input id="productImage" placeholder="Image URL" />
+    <input type="text" id="productImage" placeholder="Image URL (optional)" />
     <button type="submit">Save Product</button>
   </form>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import {
-      getFirestore,
-      collection,
-      addDoc,
-      getDocs,
-      doc,
-      updateDoc,
-      deleteDoc,
-      query,
-      orderBy
+      getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc, query, orderBy
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -173,34 +224,19 @@
     let currentCategory = "All";
     let currentPage = 1;
     const productsPerPage = 16;
+
     const productGrid = document.getElementById("productGrid");
-    const pagination = document.getElementById("pagination");
+    const pagination = document.getElementById("paginationControls");
     const searchInput = document.getElementById("searchInput");
 
     async function loadProducts() {
       const q = query(productsRef, orderBy("name"));
       const querySnapshot = await getDocs(q);
-      allProducts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderCategories();
+      allProducts = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
       renderProducts();
-    }
-
-    function renderCategories() {
-      const categories = ["All", ...new Set(allProducts.map(p => p.category))];
-      const categoryTabs = document.getElementById("categoryTabs");
-      categoryTabs.innerHTML = "";
-      categories.forEach(category => {
-        const btn = document.createElement("button");
-        btn.textContent = category;
-        if (category === currentCategory) btn.classList.add("active");
-        btn.onclick = () => {
-          currentCategory = category;
-          currentPage = 1;
-          renderCategories();
-          renderProducts();
-        };
-        categoryTabs.appendChild(btn);
-      });
     }
 
     function renderProducts() {
@@ -223,10 +259,6 @@
           <div class="description">${p.description || ""}</div>
           <p>${p.price}</p>
           ${p.image ? `<img src="${p.image}" alt="${p.name}">` : ""}
-          <div style="text-align: center; margin-top: 10px;">
-            <button onclick="editProduct('${p.id}')" style="background:#2196F3; border:none; color:white; padding:5px 10px; border-radius:6px; margin-right:5px;">Edit</button>
-            <button onclick="deleteProduct('${p.id}')" style="background:#f44336; border:none; color:white; padding:5px 10px; border-radius:6px;">Delete</button>
-          </div>
         </div>
       `).join("");
 
@@ -243,32 +275,20 @@
       }
     }
 
-    let editingProductId = null;
-
-    window.editProduct = (id) => {
-      const product = allProducts.find(p => p.id === id);
-      if (!product) return;
-      editingProductId = id;
-      document.getElementById("productName").value = product.name;
-      document.getElementById("productDescription").value = product.description || "";
-      document.getElementById("productPrice").value = product.price;
-      document.getElementById("productCategory").value = product.category;
-      document.getElementById("productImage").value = product.image || "";
-      document.getElementById("adminForm").style.display = "block";
-    };
-
-    window.deleteProduct = async (id) => {
-      if (confirm("Are you sure you want to delete this product?")) {
-        try {
-          await deleteDoc(doc(db, "products", id));
-          alert("Product deleted.");
-          loadProducts();
-        } catch (err) {
-          console.error("Delete failed:", err);
-          alert("Failed to delete product.");
-        }
+    document.getElementById("categoryTabs").addEventListener("click", e => {
+      if (e.target.tagName === "BUTTON") {
+        currentCategory = e.target.dataset.category;
+        currentPage = 1;
+        [...e.currentTarget.children].forEach(btn => btn.classList.remove("active"));
+        e.target.classList.add("active");
+        renderProducts();
       }
-    };
+    });
+
+    searchInput.addEventListener("input", () => {
+      currentPage = 1;
+      renderProducts();
+    });
 
     document.getElementById("adminForm").addEventListener("submit", async e => {
       e.preventDefault();
@@ -277,30 +297,15 @@
       const price = document.getElementById("productPrice").value;
       const category = document.getElementById("productCategory").value;
       const image = document.getElementById("productImage").value;
-
       try {
-        if (editingProductId) {
-          const ref = doc(db, "products", editingProductId);
-          await updateDoc(ref, { name, description, price, category, image });
-          alert("Product updated.");
-          editingProductId = null;
-        } else {
-          await addDoc(productsRef, { name, description, price, category, image });
-          alert("Product added.");
-        }
-
-        e.target.reset();
-        document.getElementById("adminForm").style.display = "none";
+        await addDoc(productsRef, { name, description, price, category, image });
         loadProducts();
+        e.target.reset();
+        alert("Product added!");
       } catch (err) {
-        console.error("Save failed:", err);
+        console.error("Failed to add product", err);
         alert("Failed to save product.");
       }
-    });
-
-    searchInput.addEventListener("input", () => {
-      currentPage = 1;
-      renderProducts();
     });
 
     loadProducts();
