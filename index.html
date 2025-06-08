@@ -16,339 +16,253 @@
     header {
       text-align: center;
       padding: 20px;
-      background: #1f1f1f;
+      font-size: 2em;
     }
 
-    .tabs {
+    nav {
       display: flex;
       justify-content: center;
-      flex-wrap: wrap;
       gap: 10px;
-      margin: 10px;
+      flex-wrap: wrap;
+      padding: 10px;
+      background: #1e1e1e;
     }
 
-    .tabs button {
-      padding: 10px 15px;
+    nav button {
+      background: #333;
+      color: white;
       border: none;
-      background: #2a2a2a;
-      color: #fff;
-      border-radius: 10px;
+      padding: 10px 20px;
       cursor: pointer;
+      border-radius: 8px;
     }
 
-    .tabs button.active {
-      background: #4caf50;
+    nav button:hover {
+      background: #555;
     }
 
-    .main-content {
-      display: flex;
-    }
-
-    .grid {
+    #products {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 20px;
-      padding: 20px 10px 20px 60px;
-      flex: 1;
+      padding: 20px;
     }
 
-    .card {
+    .product {
       background: #1e1e1e;
-      border-radius: 12px;
-      padding: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      height: 200px;
+      padding: 20px;
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .product-buttons {
+      margin-top: 10px;
       display: flex;
-      flex-direction: column;
       justify-content: space-between;
     }
 
-    .card h3 {
-      margin: 0;
-      font-size: 16px;
-      text-align: center;
-    }
-
-    .card .description {
-      font-size: 13px;
-      color: #ccc;
-      margin: 5px 0 10px 0;
-      text-align: center;
-      flex-grow: 1;
-    }
-
-    .card p {
-      margin: 5px 0;
-      font-size: 14px;
-      text-align: center;
-    }
-
-    .card img {
-      max-width: 100%;
-      max-height: 100px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-top: 8px;
-    }
-
-    .pagination {
-      text-align: center;
-      padding: 15px;
-    }
-
-    .pagination button {
-      margin: 0 5px;
-      padding: 5px 10px;
-      background: #333;
-      border: none;
+    .product-buttons button {
+      background-color: #555;
       color: white;
+      border: none;
+      padding: 5px 10px;
       border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .product-buttons button:hover {
+      background-color: #777;
     }
 
     #adminForm {
       display: none;
-      background: #1c1c1c;
+      background: #1e1e1e;
       padding: 20px;
+      border-radius: 10px;
       margin: 20px;
-      border-radius: 12px;
     }
 
-    #adminForm input, #adminForm select, #adminForm button, #adminForm textarea {
+    #adminForm input,
+    #adminForm textarea {
       display: block;
       margin: 10px 0;
+      width: 100%;
       padding: 10px;
-      width: 100%;
-      border: none;
-      border-radius: 8px;
-      font-family: Arial, sans-serif;
-    }
-
-    #productDescription {
-      resize: vertical;
-      height: 60px;
-    }
-
-    .sidebar {
-      width: 220px;
-      padding: 20px;
-      background-color: #1f1f1f;
-      border-left: 2px solid #2a2a2a;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .sidebar a {
-      display: inline-block;
-      background: #0088cc;
+      background: #333;
       color: white;
-      padding: 10px 15px;
-      border-radius: 20px;
-      text-decoration: none;
-      text-align: center;
-      width: 100%;
+      border: none;
+      border-radius: 5px;
     }
 
-    #searchInput {
-      padding: 8px 12px;
-      border-radius: 12px;
+    #adminForm button {
+      padding: 10px 20px;
+      background: #555;
       border: none;
-      font-size: 14px;
-      outline: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    #adminForm button:hover {
+      background: #777;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Product Catalog</h1>
-    <div class="tabs" id="categoryTabs">
-      <button data-category="All" class="active">All</button>
-      <button data-category="Best sellers">Best sellers</button>
-      <button data-category="Flower">Flower</button>
-      <button data-category="Concentrates">Concentrates</button>
-      <button data-category="Carts">Carts</button>
-      <button data-category="Disposables">Disposables</button>
-      <button data-category="Edibles">Edibles</button>
-      <button data-category="Miscellaneous">Miscellaneous</button>
-    </div>
-  </header>
+  <header>Product Catalog</header>
 
-  <div class="main-content">
-    <div id="productGrid" class="grid"></div>
-    <div class="sidebar">
-      <input type="text" id="searchInput" placeholder="Search products..." />
-      <a href="https://t.me/your_telegram" target="_blank">Join Telegram</a>
-    </div>
+  <nav>
+    <button onclick="filterCategory('All')">All</button>
+    <button onclick="filterCategory('Best sellers')">Best sellers</button>
+    <button onclick="filterCategory('Flower')">Flower</button>
+    <button onclick="filterCategory('Concentrates')">Concentrates</button>
+    <button onclick="filterCategory('Carts')">Carts</button>
+    <button onclick="filterCategory('Disposables')">Disposables</button>
+    <button onclick="filterCategory('Edibles')">Edibles</button>
+    <button onclick="filterCategory('Miscellaneous')">Miscellaneous</button>
+  </nav>
+
+  <!-- Add Product Button -->
+  <div style="text-align: center; margin: 20px;">
+    <button id="toggleAddBtn">Add Product</button>
   </div>
 
-  <div class="pagination" id="paginationControls"></div>
-
+  <!-- Admin Form -->
   <form id="adminForm">
-    <h3>Add / Edit Product</h3>
-    <input type="text" id="productName" placeholder="Product Name" required />
-    <textarea id="productDescription" placeholder="Description"></textarea>
-    <input type="text" id="productPrice" placeholder="Price" required />
-    <select id="productCategory">
-      <option value="Best sellers">Best sellers</option>
-      <option value="Flower">Flower</option>
-      <option value="Concentrates">Concentrates</option>
-      <option value="Carts">Carts</option>
-      <option value="Disposables">Disposables</option>
-      <option value="Edibles">Edibles</option>
-      <option value="Miscellaneous">Miscellaneous</option>
-    </select>
-    <input type="text" id="productImage" placeholder="Image URL (optional)" />
+    <input type="text" id="name" placeholder="Product Name" required />
+    <input type="text" id="category" placeholder="Category" required />
+    <textarea id="description" placeholder="Description"></textarea>
+    <input type="number" id="price" placeholder="Price" required />
+    <input type="text" id="image" placeholder="Image URL" />
     <button type="submit">Save Product</button>
   </form>
 
+  <div id="products"></div>
+
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-  import {
-    getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc, query, orderBy
-  } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      getDocs,
+      doc,
+      updateDoc,
+      deleteDoc,
+      query,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
-    authDomain: "project-3390921463634312663.firebaseapp.com",
-    projectId: "project-3390921463634312663",
-    storageBucket: "project-3390921463634312663.firebasestorage.app",
-    messagingSenderId: "451857573630",
-    appId: "1:451857573630:web:94f4ee25f65ef4967ae7af"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
+      authDomain: "project-3390921463634312663.firebaseapp.com",
+      projectId: "project-3390921463634312663",
+      storageBucket: "project-3390921463634312663.firebasestorage.app",
+      messagingSenderId: "451857573630",
+      appId: "1:451857573630:web:94f4ee25f65ef4967ae7af"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const productsRef = collection(db, "products");
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const productsCol = collection(db, "products");
 
-  let allProducts = [];
-  let currentCategory = "All";
-  let currentPage = 1;
-  const productsPerPage = 16;
+    const productsContainer = document.getElementById("products");
+    const adminForm = document.getElementById("adminForm");
+    let editingProductId = null;
 
-  const productGrid = document.getElementById("productGrid");
-  const pagination = document.getElementById("paginationControls");
-  const searchInput = document.getElementById("searchInput");
-  const adminForm = document.getElementById("adminForm");
-
-  let editingProductId = null;
-
-  async function loadProducts() {
-    const q = query(productsRef, orderBy("name"));
-    const querySnapshot = await getDocs(q);
-    allProducts = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    renderProducts();
-  }
-
-  function renderProducts() {
-    let filtered = currentCategory === "All"
-      ? allProducts
-      : allProducts.filter(p => p.category === currentCategory);
-
-    const searchTerm = searchInput.value.trim().toLowerCase();
-    if (searchTerm) {
-      filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
+    async function loadProducts() {
+      productsContainer.innerHTML = "";
+      const snapshot = await getDocs(query(productsCol, orderBy("name")));
+      snapshot.forEach(doc => {
+        const product = doc.data();
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML = `
+          <h3>${product.name}</h3>
+          <p><strong>Category:</strong> ${product.category}</p>
+          <p>${product.description}</p>
+          <p><strong>Price:</strong> $${product.price}</p>
+          ${product.image ? `<img src="${product.image}" alt="${product.name}" style="width:100%; border-radius: 8px;" />` : ""}
+          <div class="product-buttons">
+            <button onclick="editProduct('${doc.id}', '${product.name}', '${product.category}', \`${product.description}\`, ${product.price}, '${product.image}')">Edit</button>
+            <button onclick="deleteProduct('${doc.id}')">Delete</button>
+          </div>
+        `;
+        productsContainer.appendChild(div);
+      });
     }
 
-    const totalPages = Math.ceil(filtered.length / productsPerPage);
-    const start = (currentPage - 1) * productsPerPage;
-    const pageProducts = filtered.slice(start, start + productsPerPage);
+    window.editProduct = function(id, name, category, description, price, image) {
+      editingProductId = id;
+      adminForm.style.display = "block";
+      document.getElementById("name").value = name;
+      document.getElementById("category").value = category;
+      document.getElementById("description").value = description;
+      document.getElementById("price").value = price;
+      document.getElementById("image").value = image;
+    };
 
-    productGrid.innerHTML = pageProducts.map(p => `
-      <div class="card" data-id="${p.id}">
-        <h3>${p.name}</h3>
-        <div class="description">${p.description || ""}</div>
-        <p>${p.price}</p>
-        ${p.image ? `<img src="${p.image}" alt="${p.name}">` : ""}
-        <div style="display: flex; justify-content: center; gap: 8px; margin-top: 10px;">
-          <button onclick="editProduct('${p.id}')">Edit</button>
-          <button onclick="deleteProduct('${p.id}')">Delete</button>
-        </div>
-      </div>
-    `).join("");
-
-    pagination.innerHTML = "";
-    for (let i = 1; i <= totalPages; i++) {
-      const btn = document.createElement("button");
-      btn.textContent = i;
-      if (i === currentPage) btn.style.background = "#4caf50";
-      btn.onclick = () => {
-        currentPage = i;
-        renderProducts();
-      };
-      pagination.appendChild(btn);
-    }
-  }
-
-  window.editProduct = (id) => {
-    const product = allProducts.find(p => p.id === id);
-    if (!product) return;
-
-    document.getElementById("productName").value = product.name;
-    document.getElementById("productDescription").value = product.description || "";
-    document.getElementById("productPrice").value = product.price;
-    document.getElementById("productCategory").value = product.category;
-    document.getElementById("productImage").value = product.image || "";
-    editingProductId = id;
-    adminForm.style.display = "block";
-  };
-
-  window.deleteProduct = async (id) => {
-    if (confirm("Are you sure you want to delete this product?")) {
-      try {
+    window.deleteProduct = async function(id) {
+      if (confirm("Are you sure you want to delete this product?")) {
         await deleteDoc(doc(db, "products", id));
-        await loadProducts();
-        alert("Product deleted.");
-      } catch (err) {
-        console.error("Delete error", err);
-        alert("Failed to delete product.");
+        loadProducts();
       }
-    }
-  };
+    };
 
-  document.getElementById("categoryTabs").addEventListener("click", e => {
-    if (e.target.tagName === "BUTTON") {
-      currentCategory = e.target.dataset.category;
-      currentPage = 1;
-      [...e.currentTarget.children].forEach(btn => btn.classList.remove("active"));
-      e.target.classList.add("active");
-      renderProducts();
-    }
-  });
+    adminForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const category = document.getElementById("category").value;
+      const description = document.getElementById("description").value;
+      const price = parseFloat(document.getElementById("price").value);
+      const image = document.getElementById("image").value;
 
-  searchInput.addEventListener("input", () => {
-    currentPage = 1;
-    renderProducts();
-  });
+      const data = { name, category, description, price, image };
 
-  adminForm.addEventListener("submit", async e => {
-    e.preventDefault();
-    const name = document.getElementById("productName").value;
-    const description = document.getElementById("productDescription").value;
-    const price = document.getElementById("productPrice").value;
-    const category = document.getElementById("productCategory").value;
-    const image = document.getElementById("productImage").value;
-
-    try {
       if (editingProductId) {
-        const ref = doc(db, "products", editingProductId);
-        await updateDoc(ref, { name, description, price, category, image });
-        alert("Product updated!");
+        await updateDoc(doc(db, "products", editingProductId), data);
         editingProductId = null;
       } else {
-        await addDoc(productsRef, { name, description, price, category, image });
-        alert("Product added!");
+        await addDoc(productsCol, data);
       }
+
       adminForm.reset();
       adminForm.style.display = "none";
-      await loadProducts();
-    } catch (err) {
-      console.error("Save failed", err);
-      alert("Failed to save product.");
-    }
-  });
+      loadProducts();
+    });
 
-  loadProducts();
-</script>
+    window.filterCategory = function(category) {
+      const allProducts = document.querySelectorAll(".product");
+      allProducts.forEach(product => {
+        const text = product.innerText.toLowerCase();
+        product.style.display = category === "All" || text.includes(category.toLowerCase()) ? "block" : "none";
+      });
+    };
+
+    // Toggle Admin Form
+    function toggleAdminForm() {
+      const form = document.getElementById("adminForm");
+      const visible = form.style.display === "block";
+      form.style.display = visible ? "none" : "block";
+
+      if (!visible) {
+        adminForm.reset();
+        editingProductId = null;
+      }
+    }
+
+    document.getElementById("toggleAddBtn").addEventListener("click", () => {
+      toggleAdminForm();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key === ".") {
+        e.preventDefault();
+        toggleAdminForm();
+      }
+    });
+
+    loadProducts();
+  </script>
+</body>
+</html>
