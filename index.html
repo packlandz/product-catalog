@@ -201,6 +201,24 @@
     <button type="submit">Save Product</button>
   </form>
 
+  <script>
+    const adminForm = document.getElementById('adminForm');
+
+    // Ctrl + . keyboard shortcut toggles form visibility
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === '.') {
+        e.preventDefault();
+        if (adminForm.style.display === 'none' || adminForm.style.display === '') {
+          adminForm.style.display = 'block';
+        } else {
+          adminForm.style.display = 'none';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
   import {
