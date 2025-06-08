@@ -223,8 +223,22 @@
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
   import {
-    getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc, query, orderBy
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    doc,
+    updateDoc,
+    deleteDoc,
+    query,
+    orderBy
   } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  import {
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL
+  } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
@@ -235,139 +249,92 @@
     appId: "1:451857573630:web:94f4ee25f65ef4967ae7af"
   };
 
-  const app = initializeApp(firebaseConfig);
+ const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const storage = getStorage(app);
   const productsRef = collection(db, "products");
 
-  let allProducts = [];
-  let currentCategory = "All";
-  let currentPage = 1;
-  const productsPerPage = 16;
-
-  const productGrid = document.getElementById("productGrid");
-  const pagination = document.getElementById("paginationControls");
-  const searchInput = document.getElementById("searchInput");
   const adminForm = document.getElementById("adminForm");
-
+  const productGrid = document.getElementById("productGrid");
   let editingProductId = null;
 
   async function loadProducts() {
+    productGrid.innerHTML = "";
     const q = query(productsRef, orderBy("name"));
     const querySnapshot = await getDocs(q);
-    allProducts = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    renderProducts();
+    querySnapshot.forEach((docSnap) => {
+      const product = docSnap.data();
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.innerHTML = `
+        <img src="${product.image || ''}" alt="${product.name}">
+        <h3>${product.name}</h3>
+        <p>${product.description}</p>
+        <p>$${product.price}</p>
+        <button onclick="editProduct('${docSnap.id}', '${product.name}', '${product.description}', '${product.price}', '${product.category}', '${product.image}')">Edit</button>
+        <button onclick="deleteProduct('${docSnap.id}')">Delete</button>
+      `;
+      productGrid.appendChild(card);
+    });
   }
 
-  function renderProducts() {
-    let filtered = currentCategory === "All"
-      ? allProducts
-      : allProducts.filter(p => p.category === currentCategory);
-
-    const searchTerm = searchInput.value.trim().toLowerCase();
-    if (searchTerm) {
-      filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
-    }
-
-    const totalPages = Math.ceil(filtered.length / productsPerPage);
-    const start = (currentPage - 1) * productsPerPage;
-    const pageProducts = filtered.slice(start, start + productsPerPage);
-
-    productGrid.innerHTML = pageProducts.map(p => `
-      <div class="card" data-id="${p.id}">
-        <h3>${p.name}</h3>
-        <div class="description">${p.description || ""}</div>
-        <p>${p.price}</p>
-        ${p.image ? `<img src="${p.image}" alt="${p.name}">` : ""}
-        <div style="display: flex; justify-content: center; gap: 8px; margin-top: 10px;">
-          <button onclick="editProduct('${p.id}')">Edit</button>
-          <button onclick="deleteProduct('${p.id}')">Delete</button>
-        </div>
-      </div>
-    `).join("");
-
-    pagination.innerHTML = "";
-    for (let i = 1; i <= totalPages; i++) {
-      const btn = document.createElement("button");
-      btn.textContent = i;
-      if (i === currentPage) btn.style.background = "#4caf50";
-      btn.onclick = () => {
-        currentPage = i;
-        renderProducts();
-      };
-      pagination.appendChild(btn);
-    }
-  }
-
-  window.editProduct = (id) => {
-    const product = allProducts.find(p => p.id === id);
-    if (!product) return;
-
-    document.getElementById("productName").value = product.name;
-    document.getElementById("productDescription").value = product.description || "";
-    document.getElementById("productPrice").value = product.price;
-    document.getElementById("productCategory").value = product.category;
-    document.getElementById("productImage").value = product.image || "";
+  window.editProduct = (id, name, description, price, category, image) => {
     editingProductId = id;
+    document.getElementById("productName").value = name;
+    document.getElementById("productDescription").value = description;
+    document.getElementById("productPrice").value = price;
+    document.getElementById("productCategory").value = category;
     adminForm.style.display = "block";
   };
 
   window.deleteProduct = async (id) => {
     if (confirm("Are you sure you want to delete this product?")) {
-      try {
-        await deleteDoc(doc(db, "products", id));
-        await loadProducts();
-        alert("Product deleted.");
-      } catch (err) {
-        console.error("Delete error", err);
-        alert("Failed to delete product.");
-      }
+      await deleteDoc(doc(db, "products", id));
+      loadProducts();
     }
   };
 
-  document.getElementById("categoryTabs").addEventListener("click", e => {
-    if (e.target.tagName === "BUTTON") {
-      currentCategory = e.target.dataset.category;
-      currentPage = 1;
-      [...e.currentTarget.children].forEach(btn => btn.classList.remove("active"));
-      e.target.classList.add("active");
-      renderProducts();
-    }
-  });
-
-  searchInput.addEventListener("input", () => {
-    currentPage = 1;
-    renderProducts();
-  });
-
-  adminForm.addEventListener("submit", async e => {
+  adminForm.onsubmit = async (e) => {
     e.preventDefault();
-    const name = document.getElementById("productName").value;
-    const description = document.getElementById("productDescription").value;
-    const price = document.getElementById("productPrice").value;
+
+    const name = document.getElementById("productName").value.trim();
+    const description = document.getElementById("productDescription").value.trim();
+    const price = document.getElementById("productPrice").value.trim();
     const category = document.getElementById("productCategory").value;
-    const image = document.getElementById("productImage").value;
+    const fileInput = document.getElementById("productImageFile");
+    const file = fileInput.files[0];
+
+    let imageUrl = "";
 
     try {
-      if (editingProductId) {
-        const ref = doc(db, "products", editingProductId);
-        await updateDoc(ref, { name, description, price, category, image });
-        alert("Product updated!");
-        editingProductId = null;
-      } else {
-        await addDoc(productsRef, { name, description, price, category, image });
-        alert("Product added!");
+      if (file) {
+        const storageRef = ref(storage, `productImages/${Date.now()}_${file.name}`);
+        await uploadBytes(storageRef, file);
+        imageUrl = await getDownloadURL(storageRef);
       }
+
+      const productData = {
+        name,
+        description,
+        price,
+        category,
+        image: imageUrl
+      };
+
+      if (editingProductId) {
+        await updateDoc(doc(db, "products", editingProductId), productData);
+      } else {
+        await addDoc(productsRef, productData);
+      }
+
+      editingProductId = null;
       adminForm.reset();
       adminForm.style.display = "none";
-      await loadProducts();
-    } catch (err) {
-      console.error("Save failed", err);
-      alert("Failed to save product.");
+      loadProducts();
+    } catch (error) {
+      alert("Failed to save product: " + error.message);
     }
-  });
+  };
 
   loadProducts();
 </script>
