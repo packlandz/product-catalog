@@ -52,7 +52,7 @@
   flex: 1;
 }
 
- .card {
+.card {
   background: #1e1e1e;
   border-radius: 16px;
   overflow: hidden;
@@ -60,6 +60,8 @@
   transition: transform 0.2s ease;
   display: flex;
   flex-direction: column;
+  transform: scale(0.75); /* 👈 This scales it down by 25% */
+  transform-origin: top center; /* Keeps the card aligned correctly */
 }
 
 .card:hover {
