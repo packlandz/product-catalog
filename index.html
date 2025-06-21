@@ -280,16 +280,7 @@
         padding: 6px 8px;
         font-size: 0.8rem;
       }
-
-  #modalDetails {
-      text-align: left;
-      color: #ccc;
-      font-size: 0.9rem;
-      margin-top: 10px;
     }
-  </style>
-</head>
-<body>
   </style>
 </head>
 <body>
@@ -321,7 +312,6 @@
     <h3>Add / Edit Product</h3>
     <input type="text" id="productName" placeholder="Product Name" required />
     <textarea id="productDescription" placeholder="Description"></textarea>
-    <textarea id="productDetails" placeholder="More Details (only shown in modal)"></textarea>
     <input type="text" id="productPrice" placeholder="Price" required />
     <select id="productCategory">
       <option value="Best sellers">Best sellers</option>
@@ -343,9 +333,30 @@
       <h2 id="modalTitle"></h2>
       <p id="modalPrice"></p>
       <p id="modalDescription"></p>
-      <div id="modalDetails"></div>
     </div>
   </div>
+
+  <!-- NEW: Admin toggle script -->
+  <script>
+    const adminForm = document.getElementById('adminForm');
+
+    // Ctrl + . toggles admin form and edit/delete buttons visibility
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === '.') {
+        e.preventDefault();
+
+        const isVisible = adminForm.style.display === 'block';
+
+        // Toggle admin form
+        adminForm.style.display = isVisible ? 'none' : 'block';
+
+        // Toggle edit/delete buttons on product cards
+        document.querySelectorAll('.admin-tools').forEach(el => {
+          el.style.display = isVisible ? 'none' : 'flex';
+        });
+      }
+    });
+  </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -395,9 +406,9 @@
       const totalPages = Math.ceil(filtered.length / productsPerPage);
       const start = (currentPage - 1) * productsPerPage;
       const pageProducts = filtered.slice(start, start + productsPerPage);
-      productGrid.innerHTML = pageProducts.map(p => `
+      productGrid.innerHTML = pageProducts.map(p => 
         <div class="card" data-id="${p.id}" onclick="viewProduct('${p.id}')">
-          ${p.image ? `<img src="${p.image}" alt="${p.name}">` : ""}
+          ${p.image ? <img src="${p.image}" alt="${p.name}"> : ""}
           <h3>${p.name}</h3>
           <div class="description">${p.description || ""}</div>
           <p>${p.price}</p>
@@ -405,7 +416,7 @@
             <button onclick="editProduct('${p.id}')">Edit</button>
             <button onclick="deleteProduct('${p.id}')">Delete</button>
           </div>
-        </div>`).join("");
+        </div>).join("");
       pagination.innerHTML = "";
       for (let i = 1; i <= totalPages; i++) {
         const btn = document.createElement("button");
@@ -420,7 +431,6 @@
       e.preventDefault();
       const name = document.getElementById("productName").value;
       const description = document.getElementById("productDescription").value;
-      const details = document.getElementById("productDetails").value;
       const price = document.getElementById("productPrice").value;
       const category = document.getElementById("productCategory").value;
       const fileInput = document.getElementById("productImageUpload");
@@ -428,7 +438,7 @@
       let image = "";
       if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
-        const imageRef = storageRef(storage, `product_images/${Date.now()}_${file.name}`);
+        const imageRef = storageRef(storage, product_images/${Date.now()}_${file.name});
         await uploadBytes(imageRef, file);
         image = await getDownloadURL(imageRef);
       }
@@ -436,11 +446,11 @@
       try {
         if (editingProductId) {
           const ref = doc(db, "products", editingProductId);
-          await updateDoc(ref, { name, description, details, price, category, ...(image && { image }) });
+          await updateDoc(ref, { name, description, price, category, ...(image && { image }) });
           editingProductId = null;
           alert("Product updated!");
         } else {
-          await addDoc(productsRef, { name, description, details, price, category, image });
+          await addDoc(productsRef, { name, description, price, category, image });
           alert("Product added!");
         }
         adminForm.reset();
@@ -456,10 +466,9 @@
       const product = allProducts.find(p => p.id === id);
       if (!product) return;
       document.getElementById("modalTitle").textContent = product.name;
-      document.getElementById("modalPrice").textContent = `$${product.price}`;
+      document.getElementById("modalPrice").textContent = $${product.price};
       document.getElementById("modalDescription").textContent = product.description || "";
       document.getElementById("modalImage").src = product.image || "";
-      document.getElementById("modalDetails").textContent = product.details || "";
       document.getElementById("productModal").style.display = "flex";
     };
 
