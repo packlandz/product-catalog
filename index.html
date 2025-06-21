@@ -285,6 +285,20 @@
 </head>
 <body>
   <header>
+  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Catalog</title>
+  <style>
+    /* your exact CSS remains unchanged */
+    /* ... */
+  </style>
+</head>
+<body>
+  <header>
     <h1>Product Catalog</h1>
     <div class="tabs" id="categoryTabs">
       <button data-category="Best sellers">Best sellers</button>
@@ -308,7 +322,7 @@
 
   <div class="pagination" id="paginationControls"></div>
 
- <form id="adminForm">
+  <form id="adminForm">
     <h3>Add / Edit Product</h3>
     <input type="text" id="productName" placeholder="Product Name" required />
     <textarea id="productDescription" placeholder="Description"></textarea>
@@ -333,24 +347,18 @@
       <h2 id="modalTitle"></h2>
       <p id="modalPrice"></p>
       <p id="modalDescription"></p>
+      <!-- NEW: Only shows in modal -->
+      <p id="modalDetails" style="color:#aaa; margin-top:10px; font-size:0.85rem;"></p>
     </div>
   </div>
 
-  <!-- NEW: Admin toggle script -->
   <script>
     const adminForm = document.getElementById('adminForm');
-
-    // Ctrl + . toggles admin form and edit/delete buttons visibility
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.key === '.') {
         e.preventDefault();
-
         const isVisible = adminForm.style.display === 'block';
-
-        // Toggle admin form
         adminForm.style.display = isVisible ? 'none' : 'block';
-
-        // Toggle edit/delete buttons on product cards
         document.querySelectorAll('.admin-tools').forEach(el => {
           el.style.display = isVisible ? 'none' : 'flex';
         });
