@@ -312,8 +312,7 @@
     <h3>Add / Edit Product</h3>
     <input type="text" id="productName" placeholder="Product Name" required />
     <textarea id="productDescription" placeholder="Description"></textarea>
-   <textarea id="productDetails" placeholder="Extra details (optional)"></textarea> 
-   <input type="text" id="productPrice" placeholder="Price" required />
+    <input type="text" id="productPrice" placeholder="Price" required />
     <select id="productCategory">
       <option value="Best sellers">Best sellers</option>
       <option value="Flower">Flower</option>
@@ -334,7 +333,6 @@
       <h2 id="modalTitle"></h2>
       <p id="modalPrice"></p>
       <p id="modalDescription"></p>
-      <p id="modalDetails" style="text-align: left; color: #ccc; margin-top: 10px;"></p>
     </div>
   </div>
 
@@ -436,7 +434,6 @@
       const price = document.getElementById("productPrice").value;
       const category = document.getElementById("productCategory").value;
       const fileInput = document.getElementById("productImageUpload");
-      const details = document.getElementById("productDetails").value;
 
       let image = "";
       if (fileInput.files.length > 0) {
@@ -449,11 +446,11 @@
       try {
         if (editingProductId) {
           const ref = doc(db, "products", editingProductId);
-          await updateDoc(ref, { name, description, price, category, ...(image && { image }), details });
+          await updateDoc(ref, { name, description, price, category, ...(image && { image }) });
           editingProductId = null;
           alert("Product updated!");
         } else {
-          await addDoc(productsRef, { name, description, price, category, image, details });
+          await addDoc(productsRef, { name, description, price, category, image });
           alert("Product added!");
         }
         adminForm.reset();
@@ -471,7 +468,6 @@
       document.getElementById("modalTitle").textContent = product.name;
       document.getElementById("modalPrice").textContent = $${product.price};
       document.getElementById("modalDescription").textContent = product.description || "";
-      document.getElementById("modalDetails").textContent = product.details || "";
       document.getElementById("modalImage").src = product.image || "";
       document.getElementById("productModal").style.display = "flex";
     };
@@ -487,7 +483,6 @@
       document.getElementById("productDescription").value = product.description || "";
       document.getElementById("productPrice").value = product.price;
       document.getElementById("productCategory").value = product.category;
-      document.getElementById("productDetails").value = product.details || "";
       editingProductId = id;
       adminForm.style.display = "block";
     };
