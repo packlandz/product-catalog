@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -309,10 +308,11 @@
 
   <div class="pagination" id="paginationControls"></div>
 
- <form id="adminForm">
+  <form id="adminForm">
     <h3>Add / Edit Product</h3>
     <input type="text" id="productName" placeholder="Product Name" required />
     <textarea id="productDescription" placeholder="Description"></textarea>
+    <textarea id="productDetails" placeholder="Full Details (shown in modal only)" style="height:80px;"></textarea>
     <input type="text" id="productPrice" placeholder="Price" required />
     <select id="productCategory">
       <option value="Best sellers">Best sellers</option>
@@ -323,7 +323,7 @@
       <option value="Edibles">Edibles</option>
       <option value="Miscellaneous">Miscellaneous</option>
     </select>
-    <input type="file" id="productImageUpload" accept="image/*" />
+    <input type="text" id="productImage" placeholder="Image URL (optional)" />
     <button type="submit">Save Product</button>
   </form>
 
@@ -334,6 +334,7 @@
       <h2 id="modalTitle"></h2>
       <p id="modalPrice"></p>
       <p id="modalDescription"></p>
+      <p id="modalDetails" style="margin-top: 10px; color: #aaa;"></p>
     </div>
   </div>
 
@@ -364,49 +365,54 @@
     import {
       getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc, query, orderBy
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-    import {
-      getStorage, ref as storageRef, uploadBytes, getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
       authDomain: "project-3390921463634312663.firebaseapp.com",
       projectId: "project-3390921463634312663",
-      storageBucket: "project-3390921463634312663.appspot.com",
+      storageBucket: "project-3390921463634312663.firebasestorage.app",
       messagingSenderId: "451857573630",
       appId: "1:451857573630:web:94f4ee25f65ef4967ae7af"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const storage = getStorage(app);
     const productsRef = collection(db, "products");
 
     let allProducts = [];
     let currentCategory = "Best sellers";
     let currentPage = 1;
     const productsPerPage = 16;
-    let editingProductId = null;
 
     const productGrid = document.getElementById("productGrid");
     const pagination = document.getElementById("paginationControls");
     const searchInput = document.getElementById("searchInput");
     const adminForm = document.getElementById("adminForm");
 
+    let editingProductId = null;
+
     async function loadProducts() {
       const q = query(productsRef, orderBy("name"));
       const querySnapshot = await getDocs(q);
-      allProducts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      allProducts = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
       renderProducts();
     }
 
     function renderProducts() {
       let filtered = allProducts.filter(p => p.category === currentCategory);
+
       const searchTerm = searchInput.value.trim().toLowerCase();
-      if (searchTerm) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
+      if (searchTerm) {
+        filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
+      }
+
       const totalPages = Math.ceil(filtered.length / productsPerPage);
       const start = (currentPage - 1) * productsPerPage;
       const pageProducts = filtered.slice(start, start + productsPerPage);
+
       productGrid.innerHTML = pageProducts.map(p => `
         <div class="card" data-id="${p.id}" onclick="viewProduct('${p.id}')">
           ${p.image ? `<img src="${p.image}" alt="${p.name}">` : ""}
@@ -417,58 +423,30 @@
             <button onclick="editProduct('${p.id}')">Edit</button>
             <button onclick="deleteProduct('${p.id}')">Delete</button>
           </div>
-        </div>`).join("");
+        </div>
+      `).join("");
+
       pagination.innerHTML = "";
       for (let i = 1; i <= totalPages; i++) {
         const btn = document.createElement("button");
         btn.textContent = i;
         if (i === currentPage) btn.style.background = "#4caf50";
-        btn.onclick = () => { currentPage = i; renderProducts(); };
+        btn.onclick = () => {
+          currentPage = i;
+          renderProducts();
+        };
         pagination.appendChild(btn);
       }
     }
 
-    adminForm.addEventListener("submit", async e => {
-      e.preventDefault();
-      const name = document.getElementById("productName").value;
-      const description = document.getElementById("productDescription").value;
-      const price = document.getElementById("productPrice").value;
-      const category = document.getElementById("productCategory").value;
-      const fileInput = document.getElementById("productImageUpload");
-
-      let image = "";
-      if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        const imageRef = storageRef(storage, `product_images/${Date.now()}_${file.name}`);
-        await uploadBytes(imageRef, file);
-        image = await getDownloadURL(imageRef);
-      }
-
-      try {
-        if (editingProductId) {
-          const ref = doc(db, "products", editingProductId);
-          await updateDoc(ref, { name, description, price, category, ...(image && { image }) });
-          editingProductId = null;
-          alert("Product updated!");
-        } else {
-          await addDoc(productsRef, { name, description, price, category, image });
-          alert("Product added!");
-        }
-        adminForm.reset();
-        adminForm.style.display = "none";
-        await loadProducts();
-      } catch (err) {
-        console.error("Save failed", err);
-        alert("Failed to save product.");
-      }
-    });
-
-    window.viewProduct = id => {
+    window.viewProduct = (id) => {
       const product = allProducts.find(p => p.id === id);
       if (!product) return;
+
       document.getElementById("modalTitle").textContent = product.name;
       document.getElementById("modalPrice").textContent = `$${product.price}`;
       document.getElementById("modalDescription").textContent = product.description || "";
+      document.getElementById("modalDetails").textContent = product.details || "";
       document.getElementById("modalImage").src = product.image || "";
       document.getElementById("productModal").style.display = "flex";
     };
@@ -477,18 +455,21 @@
       document.getElementById("productModal").style.display = "none";
     };
 
-    window.editProduct = id => {
+    window.editProduct = (id) => {
       const product = allProducts.find(p => p.id === id);
       if (!product) return;
+
       document.getElementById("productName").value = product.name;
       document.getElementById("productDescription").value = product.description || "";
+      document.getElementById("productDetails").value = product.details || "";
       document.getElementById("productPrice").value = product.price;
       document.getElementById("productCategory").value = product.category;
+      document.getElementById("productImage").value = product.image || "";
       editingProductId = id;
       adminForm.style.display = "block";
     };
 
-    window.deleteProduct = async id => {
+    window.deleteProduct = async (id) => {
       if (confirm("Are you sure you want to delete this product?")) {
         try {
           await deleteDoc(doc(db, "products", id));
@@ -514,6 +495,34 @@
     searchInput.addEventListener("input", () => {
       currentPage = 1;
       renderProducts();
+    });
+
+    adminForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      const name = document.getElementById("productName").value;
+      const description = document.getElementById("productDescription").value;
+      const details = document.getElementById("productDetails").value;
+      const price = document.getElementById("productPrice").value;
+      const category = document.getElementById("productCategory").value;
+      const image = document.getElementById("productImage").value;
+
+      try {
+        if (editingProductId) {
+          const ref = doc(db, "products", editingProductId);
+          await updateDoc(ref, { name, description, details, price, category, image });
+          alert("Product updated!");
+          editingProductId = null;
+        } else {
+          await addDoc(productsRef, { name, description, details, price, category, image });
+          alert("Product added!");
+        }
+        adminForm.reset();
+        adminForm.style.display = "none";
+        await loadProducts();
+      } catch (err) {
+        console.error("Save failed", err);
+        alert("Failed to save product.");
+      }
     });
 
     loadProducts();
