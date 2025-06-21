@@ -212,16 +212,6 @@
       margin-bottom: 20px;
     }
 
-    #modalDetails {
-  margin-top: 15px;
-  color: #bbb;
-  font-size: 0.9rem;
-  font-style: italic;
-  text-align: left;
-  line-height: 1.4;
-  white-space: pre-wrap; /* preserves line breaks in text */
-}
-
     #closeModal {
       position: absolute;
       top: 10px;
@@ -322,7 +312,6 @@
     <h3>Add / Edit Product</h3>
     <input type="text" id="productName" placeholder="Product Name" required />
     <textarea id="productDescription" placeholder="Description"></textarea>
-    <textarea id="productDetails" placeholder="Full Details (shown in modal only)" style="height:80px;"></textarea>
     <input type="text" id="productPrice" placeholder="Price" required />
     <select id="productCategory">
       <option value="Best sellers">Best sellers</option>
@@ -333,7 +322,11 @@
       <option value="Edibles">Edibles</option>
       <option value="Miscellaneous">Miscellaneous</option>
     </select>
-    <input type="text" id="productImage" placeholder="Image URL (optional)" />
+    <!-- IMAGE UPLOAD -->
+    <label for="productImageUpload" style="color:#ccc; cursor:pointer; display:block; margin-top:10px;">Upload Image (optional)</label>
+    <input type="file" id="productImageUpload" accept="image/*" style="display:block; margin-bottom:10px;" />
+    <!-- Hidden text input (not used but kept) -->
+    <input type="text" id="productImage" placeholder="Image URL (optional)" style="display:none;" />
     <button type="submit">Save Product</button>
   </form>
 
@@ -344,7 +337,6 @@
       <h2 id="modalTitle"></h2>
       <p id="modalPrice"></p>
       <p id="modalDescription"></p>
-      <p id="modalDetails" style="margin-top: 10px; color: #aaa;"></p>
     </div>
   </div>
 
@@ -376,6 +368,13 @@
       getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc, query, orderBy
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
+    import {
+      getStorage,
+      ref as storageRef,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
       authDomain: "project-3390921463634312663.firebaseapp.com",
@@ -387,6 +386,7 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const storage = getStorage(app);
     const productsRef = collection(db, "products");
 
     let allProducts = [];
@@ -397,9 +397,30 @@
     const productGrid = document.getElementById("productGrid");
     const pagination = document.getElementById("paginationControls");
     const searchInput = document.getElementById("searchInput");
-    const adminForm = document.getElementById("adminForm");
+    const adminFormEl = document.getElementById("adminForm");
+    const fileInput = document.getElementById("productImageUpload");
 
     let editingProductId = null;
+    let uploadedImageURL = null;
+
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      const fileRef = storageRef(storage, `product_images/${Date.now()}_${file.name}`);
+
+      try {
+        // Upload file
+        await uploadBytes(fileRef, file);
+        // Get download URL
+        uploadedImageURL = await getDownloadURL(fileRef);
+        alert("Image uploaded successfully!");
+      } catch (error) {
+        console.error("Image upload failed:", error);
+        alert("Image upload failed. Please try again.");
+        uploadedImageURL = null;
+      }
+    });
 
     async function loadProducts() {
       const q = query(productsRef, orderBy("name"));
@@ -456,7 +477,6 @@
       document.getElementById("modalTitle").textContent = product.name;
       document.getElementById("modalPrice").textContent = `$${product.price}`;
       document.getElementById("modalDescription").textContent = product.description || "";
-      document.getElementById("modalDetails").textContent = product.details || "";
       document.getElementById("modalImage").src = product.image || "";
       document.getElementById("productModal").style.display = "flex";
     };
@@ -471,12 +491,14 @@
 
       document.getElementById("productName").value = product.name;
       document.getElementById("productDescription").value = product.description || "";
-      document.getElementById("productDetails").value = product.details || "";
       document.getElementById("productPrice").value = product.price;
       document.getElementById("productCategory").value = product.category;
+      // Reset uploaded image url and clear file input when editing
+      uploadedImageURL = null;
+      fileInput.value = "";
       document.getElementById("productImage").value = product.image || "";
       editingProductId = id;
-      adminForm.style.display = "block";
+      adminFormEl.style.display = "block";
     };
 
     window.deleteProduct = async (id) => {
@@ -507,35 +529,16 @@
       renderProducts();
     });
 
-    adminForm.addEventListener("submit", async e => {
+    adminFormEl.addEventListener("submit", async e => {
       e.preventDefault();
       const name = document.getElementById("productName").value;
       const description = document.getElementById("productDescription").value;
-      const details = document.getElementById("productDetails").value;
       const price = document.getElementById("productPrice").value;
       const category = document.getElementById("productCategory").value;
-      const image = document.getElementById("productImage").value;
+
+      // Use uploadedImageURL if exists, else fallback to productImage text input value (hidden)
+      let image = uploadedImageURL || document.getElementById("productImage").value || "";
 
       try {
         if (editingProductId) {
-          const ref = doc(db, "products", editingProductId);
-          await updateDoc(ref, { name, description, details, price, category, image });
-          alert("Product updated!");
-          editingProductId = null;
-        } else {
-          await addDoc(productsRef, { name, description, details, price, category, image });
-          alert("Product added!");
-        }
-        adminForm.reset();
-        adminForm.style.display = "none";
-        await loadProducts();
-      } catch (err) {
-        console.error("Save failed", err);
-        alert("Failed to save product.");
-      }
-    });
-
-    loadProducts();
-  </script>
-</body>
-</html>
+          const ref = doc(db, "products",
