@@ -220,66 +220,6 @@
       color: #aaa;
       cursor: pointer;
     }
-
-    @media (max-width: 768px) {
-      .main-content {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        width: 100%;
-        border-left: none;
-        border-top: 2px solid #2a2a2a;
-        padding: 15px 10px;
-        margin-top: 10px;
-      }
-
-      .grid {
-        padding: 10px;
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .card {
-        transform: scale(1);
-        margin: auto;
-      }
-
-      header {
-        padding: 15px 10px;
-      }
-
-      .tabs {
-        justify-content: center;
-        gap: 6px;
-        margin: 5px 0;
-      }
-
-      .tabs button {
-        padding: 8px 10px;
-        font-size: 0.9rem;
-      }
-
-      .pagination button {
-        margin: 3px 4px;
-        padding: 6px 8px;
-        font-size: 0.9rem;
-      }
-    }
-
-    @media (max-width: 400px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar-warning {
-        font-size: 0.8rem;
-      }
-
-      .tabs button {
-        padding: 6px 8px;
-        font-size: 0.8rem;
-      }
-    }
   </style>
 </head>
 <body>
@@ -365,10 +305,6 @@
     const productsPerPage = 16;
     let editingProductId = null;
 
-    const productGrid = document.getElementById("productGrid");
-    const pagination = document.getElementById("paginationControls");
-    const searchInput = document.getElementById("searchInput");
-
     async function loadProducts() {
       const q = query(productsRef, orderBy("name"));
       const querySnapshot = await getDocs(q);
@@ -378,13 +314,19 @@
 
     function renderProducts() {
       let filtered = allProducts.filter(p => p.category === currentCategory);
-      const searchTerm = searchInput.value.trim().toLowerCase();
+      const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
       if (searchTerm) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
       const totalPages = Math.ceil(filtered.length / productsPerPage);
       const start = (currentPage - 1) * productsPerPage;
       const pageProducts = filtered.slice(start, start + productsPerPage);
-      productGrid.innerHTML = pageProducts.map(p =>
-        `<div class="card" data-id="${p.id}" onclick="viewProduct('${p.id}')">
+      const productGrid = document.getElementById("productGrid");
+      productGrid.innerHTML = "";
+      pageProducts.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.setAttribute("data-id", p.id);
+        card.onclick = () => viewProduct(p.id);
+        card.innerHTML = `
           ${p.image ? `<img src="${p.image}" alt="${p.name}">` : ""}
           <h3>${p.name}</h3>
           <div class="description">${p.description || ""}</div>
@@ -392,8 +334,11 @@
           <div class="actions admin-tools" style="display: none;" onclick="event.stopPropagation();">
             <button onclick="editProduct('${p.id}')">Edit</button>
             <button onclick="deleteProduct('${p.id}')">Delete</button>
-          </div>
-        </div>`).join("");
+          </div>`;
+        productGrid.appendChild(card);
+      });
+
+      const pagination = document.getElementById("paginationControls");
       pagination.innerHTML = "";
       for (let i = 1; i <= totalPages; i++) {
         const btn = document.createElement("button");
@@ -446,8 +391,8 @@
       document.getElementById("modalTitle").textContent = product.name;
       document.getElementById("modalPrice").textContent = `$${product.price}`;
       document.getElementById("modalDescription").textContent = product.description || "";
-      document.getElementById("modalImage").src = product.image || "";
       document.getElementById("modalDetails").textContent = product.details || "";
+      document.getElementById("modalImage").src = product.image || "";
       document.getElementById("productModal").style.display = "flex";
     };
 
@@ -490,7 +435,7 @@
       }
     });
 
-    searchInput.addEventListener("input", () => {
+    document.getElementById("searchInput").addEventListener("input", () => {
       currentPage = 1;
       renderProducts();
     });
@@ -499,4 +444,3 @@
   </script>
 </body>
 </html>
-
