@@ -137,7 +137,7 @@
       font-family: Arial, sans-serif;
     }
 
-    #productDescription {
+    #productDescription, #productDetails {
       resize: vertical;
       height: 60px;
     }
@@ -221,7 +221,6 @@
       cursor: pointer;
     }
 
-    /* MOBILE RESPONSIVE STYLES */
     @media (max-width: 768px) {
       .main-content {
         flex-direction: column;
@@ -285,20 +284,6 @@
 </head>
 <body>
   <header>
-  
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Product Catalog</title>
-  <style>
-    /* your exact CSS remains unchanged */
-    /* ... */
-  </style>
-</head>
-<body>
-  <header>
     <h1>Product Catalog</h1>
     <div class="tabs" id="categoryTabs">
       <button data-category="Best sellers">Best sellers</button>
@@ -326,7 +311,7 @@
     <h3>Add / Edit Product</h3>
     <input type="text" id="productName" placeholder="Product Name" required />
     <textarea id="productDescription" placeholder="Description"></textarea>
-    <textarea id="productDetails" placeholder="Details (shown in modal only)"></textarea> <!-- NEW FIELD -->
+    <textarea id="productDetails" placeholder="Details (only shown in modal)"></textarea>
     <input type="text" id="productPrice" placeholder="Price" required />
     <select id="productCategory">
       <option value="Best sellers">Best sellers</option>
@@ -348,23 +333,9 @@
       <h2 id="modalTitle"></h2>
       <p id="modalPrice"></p>
       <p id="modalDescription"></p>
-      <p id="modalDetails" style="color:#aaa; margin-top:10px; font-size:0.85rem;"></p> <!-- Already existed -->
+      <p id="modalDetails" style="color:#aaa; margin-top:10px; font-size:0.85rem;"></p>
     </div>
   </div>
-
-  <script>
-    const adminForm = document.getElementById('adminForm');
-    document.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.key === '.') {
-        e.preventDefault();
-        const isVisible = adminForm.style.display === 'block';
-        adminForm.style.display = isVisible ? 'none' : 'block';
-        document.querySelectorAll('.admin-tools').forEach(el => {
-          el.style.display = isVisible ? 'none' : 'flex';
-        });
-      }
-    });
-  </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -375,16 +346,15 @@
       getStorage, ref as storageRef, uploadBytes, getDownloadURL
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
-    const firebaseConfig = {
+    const app = initializeApp({
       apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
       authDomain: "project-3390921463634312663.firebaseapp.com",
       projectId: "project-3390921463634312663",
       storageBucket: "project-3390921463634312663.appspot.com",
       messagingSenderId: "451857573630",
       appId: "1:451857573630:web:94f4ee25f65ef4967ae7af"
-    };
+    });
 
-    const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
     const productsRef = collection(db, "products");
@@ -413,7 +383,7 @@
       const totalPages = Math.ceil(filtered.length / productsPerPage);
       const start = (currentPage - 1) * productsPerPage;
       const pageProducts = filtered.slice(start, start + productsPerPage);
-      productGrid.innerHTML = pageProducts.map(p => 
+      productGrid.innerHTML = pageProducts.map(p =>
         `<div class="card" data-id="${p.id}" onclick="viewProduct('${p.id}')">
           ${p.image ? `<img src="${p.image}" alt="${p.name}">` : ""}
           <h3>${p.name}</h3>
@@ -434,11 +404,11 @@
       }
     }
 
-    adminForm.addEventListener("submit", async e => {
+    document.getElementById("adminForm").addEventListener("submit", async e => {
       e.preventDefault();
       const name = document.getElementById("productName").value;
       const description = document.getElementById("productDescription").value;
-      const details = document.getElementById("productDetails").value; // NEW
+      const details = document.getElementById("productDetails").value;
       const price = document.getElementById("productPrice").value;
       const category = document.getElementById("productCategory").value;
       const fileInput = document.getElementById("productImageUpload");
@@ -454,15 +424,15 @@
       try {
         if (editingProductId) {
           const ref = doc(db, "products", editingProductId);
-          await updateDoc(ref, { name, description, details, price, category, ...(image && { image }) }); // UPDATED
+          await updateDoc(ref, { name, description, details, price, category, ...(image && { image }) });
           editingProductId = null;
           alert("Product updated!");
         } else {
-          await addDoc(productsRef, { name, description, details, price, category, image }); // UPDATED
+          await addDoc(productsRef, { name, description, details, price, category, image });
           alert("Product added!");
         }
-        adminForm.reset();
-        adminForm.style.display = "none";
+        document.getElementById("adminForm").reset();
+        document.getElementById("adminForm").style.display = "none";
         await loadProducts();
       } catch (err) {
         console.error("Save failed", err);
@@ -477,7 +447,7 @@
       document.getElementById("modalPrice").textContent = `$${product.price}`;
       document.getElementById("modalDescription").textContent = product.description || "";
       document.getElementById("modalImage").src = product.image || "";
-      document.getElementById("modalDetails").textContent = product.details || ""; // NEW
+      document.getElementById("modalDetails").textContent = product.details || "";
       document.getElementById("productModal").style.display = "flex";
     };
 
@@ -490,11 +460,11 @@
       if (!product) return;
       document.getElementById("productName").value = product.name;
       document.getElementById("productDescription").value = product.description || "";
-      document.getElementById("productDetails").value = product.details || ""; // NEW
+      document.getElementById("productDetails").value = product.details || "";
       document.getElementById("productPrice").value = product.price;
       document.getElementById("productCategory").value = product.category;
       editingProductId = id;
-      adminForm.style.display = "block";
+      document.getElementById("adminForm").style.display = "block";
     };
 
     window.deleteProduct = async id => {
@@ -529,3 +499,4 @@
   </script>
 </body>
 </html>
+
