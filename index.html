@@ -322,8 +322,8 @@
       <option value="Edibles">Edibles</option>
       <option value="Miscellaneous">Miscellaneous</option>
     </select>
-    <!-- UPDATED: Replace file upload with Imgur URL input -->
-    <input type="text" id="productImageURL" placeholder="Image URL (e.g. from Imgur)" />
+    <!-- Changed back to image URL input, no file upload -->
+    <input type="text" id="productImageUrl" placeholder="Image URL" />
     <button type="submit">Save Product</button>
   </form>
 
@@ -336,6 +336,22 @@
       <p id="modalDescription"></p>
     </div>
   </div>
+
+  <!-- Admin toggle script: restored exactly as before -->
+  <script>
+    const adminForm = document.getElementById('adminForm');
+
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === '.') {
+        e.preventDefault();
+        const isVisible = adminForm.style.display === 'block';
+        adminForm.style.display = isVisible ? 'none' : 'block';
+        document.querySelectorAll('.admin-tools').forEach(el => {
+          el.style.display = isVisible ? 'none' : 'flex';
+        });
+      }
+    });
+  </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -408,7 +424,7 @@
       const description = document.getElementById("productDescription").value;
       const price = document.getElementById("productPrice").value;
       const category = document.getElementById("productCategory").value;
-      const image = document.getElementById("productImageURL").value.trim();
+      const image = document.getElementById("productImageUrl").value;
 
       try {
         if (editingProductId) {
@@ -450,7 +466,7 @@
       document.getElementById("productDescription").value = product.description || "";
       document.getElementById("productPrice").value = product.price;
       document.getElementById("productCategory").value = product.category;
-      document.getElementById("productImageURL").value = product.image || "";
+      document.getElementById("productImageUrl").value = product.image || "";
       editingProductId = id;
       adminForm.style.display = "block";
     };
