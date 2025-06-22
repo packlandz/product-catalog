@@ -308,7 +308,7 @@
 
   <div class="pagination" id="paginationControls"></div>
 
- <form id="adminForm">
+  <form id="adminForm">
     <h3>Add / Edit Product</h3>
     <input type="text" id="productName" placeholder="Product Name" required />
     <textarea id="productDescription" placeholder="Description"></textarea>
@@ -322,7 +322,8 @@
       <option value="Edibles">Edibles</option>
       <option value="Miscellaneous">Miscellaneous</option>
     </select>
-    <input type="file" id="productImageUpload" accept="image/*" />
+    <!-- UPDATED: Replace file upload with Imgur URL input -->
+    <input type="text" id="productImageURL" placeholder="Image URL (e.g. from Imgur)" />
     <button type="submit">Save Product</button>
   </form>
 
@@ -336,36 +337,11 @@
     </div>
   </div>
 
-  <!-- NEW: Admin toggle script -->
-  <script>
-    const adminForm = document.getElementById('adminForm');
-
-    // Ctrl + . toggles admin form and edit/delete buttons visibility
-    document.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.key === '.') {
-        e.preventDefault();
-
-        const isVisible = adminForm.style.display === 'block';
-
-        // Toggle admin form
-        adminForm.style.display = isVisible ? 'none' : 'block';
-
-        // Toggle edit/delete buttons on product cards
-        document.querySelectorAll('.admin-tools').forEach(el => {
-          el.style.display = isVisible ? 'none' : 'flex';
-        });
-      }
-    });
-  </script>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import {
       getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc, query, orderBy
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-    import {
-      getStorage, ref as storageRef, uploadBytes, getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
@@ -378,7 +354,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const storage = getStorage(app);
     const productsRef = collection(db, "products");
 
     let allProducts = [];
@@ -433,20 +408,12 @@
       const description = document.getElementById("productDescription").value;
       const price = document.getElementById("productPrice").value;
       const category = document.getElementById("productCategory").value;
-      const fileInput = document.getElementById("productImageUpload");
-
-      let image = "";
-      if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        const imageRef = storageRef(storage, `product_images/${Date.now()}_${file.name}`);
-        await uploadBytes(imageRef, file);
-        image = await getDownloadURL(imageRef);
-      }
+      const image = document.getElementById("productImageURL").value.trim();
 
       try {
         if (editingProductId) {
           const ref = doc(db, "products", editingProductId);
-          await updateDoc(ref, { name, description, price, category, ...(image && { image }) });
+          await updateDoc(ref, { name, description, price, category, image });
           editingProductId = null;
           alert("Product updated!");
         } else {
@@ -483,6 +450,7 @@
       document.getElementById("productDescription").value = product.description || "";
       document.getElementById("productPrice").value = product.price;
       document.getElementById("productCategory").value = product.category;
+      document.getElementById("productImageURL").value = product.image || "";
       editingProductId = id;
       adminForm.style.display = "block";
     };
