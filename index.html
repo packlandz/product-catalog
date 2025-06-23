@@ -119,7 +119,7 @@
       border-radius: 6px;
     }
 
-    #adminForm {
+    # {
       display: none;
       background: #1c1c1c;
       padding: 20px;
@@ -127,7 +127,7 @@
       border-radius: 12px;
     }
 
-    #adminForm input, #adminForm select, #adminForm button, #adminForm textarea {
+    # input, # select, #adminForm button, #adminForm textarea {
       display: block;
       margin: 10px 0;
       padding: 10px;
@@ -312,6 +312,7 @@
     <h3>Add / Edit Product</h3>
     <input type="text" id="productName" placeholder="Product Name" required />
     <textarea id="productDescription" placeholder="Description"></textarea>
+    <textarea id="productDetails" placeholder="Details (optional, line breaks supported)"></textarea>
     <input type="text" id="productPrice" placeholder="Price" required />
     <select id="productCategory">
       <option value="Best sellers">Best sellers</option>
@@ -426,15 +427,16 @@
       const price = document.getElementById("productPrice").value;
       const category = document.getElementById("productCategory").value;
       const image = document.getElementById("productImageUrl").value;
+      const details = document.getElementById("productDetails").value;
 
       try {
         if (editingProductId) {
           const ref = doc(db, "products", editingProductId);
-          await updateDoc(ref, { name, description, price, category, image });
+          await updateDoc(ref, { name, description, price, category, image, details });
           editingProductId = null;
           alert("Product updated!");
         } else {
-          await addDoc(productsRef, { name, description, price, category, image });
+          await addDoc(productsRef, { name, description, price, category, image, details });
           alert("Product added!");
         }
         adminForm.reset();
@@ -469,6 +471,7 @@
       document.getElementById("productPrice").value = product.price;
       document.getElementById("productCategory").value = product.category;
       document.getElementById("productImageUrl").value = product.image || "";
+      document.getElementById("productDetails").value = product.details || "";
       editingProductId = id;
       adminForm.style.display = "block";
     };
