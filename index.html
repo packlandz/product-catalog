@@ -334,6 +334,7 @@
       <h2 id="modalTitle"></h2>
       <p id="modalPrice"></p>
       <p id="modalDescription"></p>
+      <p id="modalDetails" style="white-space: pre-wrap; font-style: italic; text-align: left; color: #ccc; margin-top: 10px;"></p>
     </div>
   </div>
 
@@ -446,14 +447,15 @@
     });
 
     window.viewProduct = id => {
-      const product = allProducts.find(p => p.id === id);
-      if (!product) return;
-      document.getElementById("modalTitle").textContent = product.name;
-      document.getElementById("modalPrice").textContent = `$${product.price}`;
-      document.getElementById("modalDescription").textContent = product.description || "";
-      document.getElementById("modalImage").src = product.image || "";
-      document.getElementById("productModal").style.display = "flex";
-    };
+  const product = allProducts.find(p => p.id === id);
+  if (!product) return;
+  document.getElementById("modalTitle").textContent = product.name;
+  document.getElementById("modalPrice").textContent = `$${product.price}`;
+  document.getElementById("modalDescription").textContent = product.description || "";
+  document.getElementById("modalImage").src = product.image || "";
+  document.getElementById("modalDetails").textContent = product.details || "";
+  document.getElementById("productModal").style.display = "flex";
+};
 
     document.getElementById("closeModal").onclick = () => {
       document.getElementById("productModal").style.display = "none";
