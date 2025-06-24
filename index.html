@@ -81,6 +81,7 @@
       margin: 10px 0 0 0;
       text-align: center;
       color: #fff;
+      white-space: pre-wrap; /* <-- PRESERVE LINE BREAKS */
     }
 
     .card .description {
@@ -451,7 +452,7 @@
     window.viewProduct = id => {
   const product = allProducts.find(p => p.id === id);
   if (!product) return;
-  document.getElementById("modalTitle").textContent = product.name;
+  document.getElementById("modalTitle").innerHTML = product.name;
   document.getElementById("modalPrice").textContent = product.price;
   document.getElementById("modalDescription").textContent = product.description || "";
   document.getElementById("modalImage").src = product.image || "";
