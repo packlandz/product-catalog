@@ -363,15 +363,6 @@
       storageBucket: "project-3390921463634312663.appspot.com",
       messagingSenderId: "451857573630",
       appId: "1:451857573630:web:94f4ee25f65ef4967ae7af"
-   
-    import {
-  getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc, query, orderBy
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-import {
-  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-    
-    const auth = getAuth(app);
     };
 
     const app = initializeApp(firebaseConfig);
@@ -509,52 +500,6 @@ import {
     });
 
     loadProducts();
-
-    const loginModal = document.getElementById("loginModal");
-const loginBtn = document.getElementById("loginBtn");
-const loginError = document.getElementById("loginError");
-
-loginBtn.onclick = async () => {
-  const email = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value.trim();
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    loginError.textContent = "";
-  } catch (err) {
-    loginError.textContent = "Login failed. Check credentials.";
-  }
-};
-
-onAuthStateChanged(auth, user => {
-  const adminTools = document.querySelectorAll(".admin-tools");
-  if (user) {
-    loginModal.style.display = "none";
-    adminTools.forEach(el => el.style.display = "flex");
-  } else {
-    loginModal.style.display = "flex";
-    adminTools.forEach(el => el.style.display = "none");
-    adminForm.style.display = "none";
-  }
-});
-
-// Optional logout shortcut: Ctrl + Shift + .
-document.addEventListener("keydown", e => {
-  if (e.ctrlKey && e.shiftKey && e.key === ".") {
-    signOut(auth).then(() => alert("Logged out."));
-  }
-});
-
   </script>
-
-<div id="loginModal" style="display: flex; position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.8); align-items: center; justify-content: center;">
-  <div style="background: #1e1e1e; padding: 30px; border-radius: 12px; width: 320px; text-align: center;">
-    <h3 style="color: white;">Admin Login</h3>
-    <input type="email" id="loginEmail" placeholder="Email" style="margin: 10px 0; padding: 10px; width: 100%;" />
-    <input type="password" id="loginPassword" placeholder="Password" style="margin: 10px 0; padding: 10px; width: 100%;" />
-    <button id="loginBtn" style="padding: 10px 20px;">Login</button>
-    <p id="loginError" style="color: red; font-size: 0.9rem;"></p>
-  </div>
-</div>
-  
 </body>
 </html>
