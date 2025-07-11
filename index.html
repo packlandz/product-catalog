@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Product Catalog</title>
   <style>
+    /* Your existing styles */
     body {
       font-family: Arial, sans-serif;
       background: #121212;
@@ -274,6 +275,69 @@
         font-size: 0.8rem;
       }
     }
+
+    /* --- NEW ADMIN LOGIN PANEL STYLE --- */
+    #adminLoginPanel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #222;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+      padding: 20px;
+      width: 280px;
+      color: white;
+      display: none; /* Hidden by default */
+      z-index: 1500;
+      font-family: Arial, sans-serif;
+    }
+
+    #adminLoginPanel h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    #adminLoginPanel input[type="email"],
+    #adminLoginPanel input[type="password"] {
+      width: 100%;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      background: #333;
+      color: white;
+    }
+
+    #adminLoginPanel button {
+      width: 100%;
+      padding: 10px;
+      background: #4caf50;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    #adminLoginPanel button:hover {
+      background: #45a049;
+    }
+
+    #adminLoginPanel .logout-btn {
+      background: #f44336;
+      margin-top: 10px;
+    }
+
+    #adminLoginError {
+      color: #f44336;
+      text-align: center;
+      margin-bottom: 10px;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -288,7 +352,7 @@
       <button data-category="Edibles">Edibles</button>
       <button data-category="Pre-rolls">Pre-rolls</button>
       <button data-category="Miscellaneous">Miscellaneous</button>
-</div>
+    </div>
   </header>
 
   <div class="main-content">
@@ -317,8 +381,7 @@
       <option value="Edibles">Edibles</option>
       <option value="Pre-rolls">Pre-rolls</option>
       <option value="Miscellaneous">Miscellaneous</option>
-</select>
-    <!-- Changed back to image URL input, no file upload -->
+    </select>
     <input type="text" id="productImageUrl" placeholder="Image URL" />
     <button type="submit">Save Product</button>
   </form>
@@ -332,6 +395,16 @@
       <p id="modalDescription"></p>
       <p id="modalDetails" style="white-space: pre-wrap; font-style: italic; text-align: left; color: #ccc; margin-top: 10px;"></p>
     </div>
+  </div>
+
+  <!-- New Admin Login/Logout Floating Panel -->
+  <div id="adminLoginPanel">
+    <h3>Admin Login</h3>
+    <div id="adminLoginError"></div>
+    <input type="email" id="adminEmail" placeholder="Email" autocomplete="username" />
+    <input type="password" id="adminPassword" placeholder="Password" autocomplete="current-password" />
+    <button id="adminLoginBtn">Login</button>
+    <button id="adminLogoutBtn" class="logout-btn" style="display:none;">Logout</button>
   </div>
 
   <!-- Admin toggle script: restored exactly as before -->
@@ -356,6 +429,15 @@
       getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc, query, orderBy
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      getIdTokenResult
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+    // Your existing Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBg--ptpq9wlQNH1HK-SRe88aDx1_yO7yQ",
       authDomain: "project-3390921463634312663.firebaseapp.com",
@@ -365,9 +447,13 @@
       appId: "1:451857573630:web:94f4ee25f65ef4967ae7af"
     };
 
+    // Initialize Firebase app and Firestore as before
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const productsRef = collection(db, "products");
+
+    // Initialize Firebase Auth
+    const auth = getAuth(app);
 
     let allProducts = [];
     let currentCategory = "Best sellers";
@@ -380,6 +466,15 @@
     const searchInput = document.getElementById("searchInput");
     const adminForm = document.getElementById("adminForm");
 
+    // Elements for admin login panel
+    const adminLoginPanel = document.getElementById("adminLoginPanel");
+    const adminLoginBtn = document.getElementById("adminLoginBtn");
+    const adminLogoutBtn = document.getElementById("adminLogoutBtn");
+    const adminLoginError = document.getElementById("adminLoginError");
+    const adminEmail = document.getElementById("adminEmail");
+    const adminPassword = document.getElementById("adminPassword");
+
+    // Load and render products (your existing code)
     async function loadProducts() {
       const q = query(productsRef, orderBy("name"));
       const querySnapshot = await getDocs(q);
@@ -444,15 +539,15 @@
     });
 
     window.viewProduct = id => {
-  const product = allProducts.find(p => p.id === id);
-  if (!product) return;
-  document.getElementById("modalTitle").innerHTML = product.name;
-  document.getElementById("modalPrice").textContent = product.price;
-  document.getElementById("modalDescription").textContent = product.description || "";
-  document.getElementById("modalImage").src = product.image || "";
-  document.getElementById("modalDetails").textContent = product.details || "";
-  document.getElementById("productModal").style.display = "flex";
-};
+      const product = allProducts.find(p => p.id === id);
+      if (!product) return;
+      document.getElementById("modalTitle").innerHTML = product.name;
+      document.getElementById("modalPrice").textContent = product.price;
+      document.getElementById("modalDescription").textContent = product.description || "";
+      document.getElementById("modalImage").src = product.image || "";
+      document.getElementById("modalDetails").textContent = product.details || "";
+      document.getElementById("productModal").style.display = "flex";
+    };
 
     document.getElementById("closeModal").onclick = () => {
       document.getElementById("productModal").style.display = "none";
@@ -499,6 +594,116 @@
       renderProducts();
     });
 
+    // ----- NEW ADMIN LOGIN/LOGOUT FUNCTIONALITY -----
+
+    // Toggle admin login panel with Ctrl + -
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === '-') {
+        e.preventDefault();
+        if (adminLoginPanel.style.display === "block") {
+          adminLoginPanel.style.display = "none";
+        } else {
+          // Only show panel if no user or if user is admin
+          if (!auth.currentUser) {
+            adminLoginPanel.style.display = "block";
+            adminLoginBtn.style.display = "block";
+            adminLogoutBtn.style.display = "none";
+          } else {
+            // Check admin claim, only show if admin
+            getIdTokenResult(auth.currentUser)
+              .then((idTokenResult) => {
+                if (idTokenResult.claims.admin) {
+                  adminLoginPanel.style.display = "block";
+                  adminLoginBtn.style.display = "none";
+                  adminLogoutBtn.style.display = "block";
+                } else {
+                  adminLoginPanel.style.display = "none";
+                }
+              })
+              .catch(() => {
+                adminLoginPanel.style.display = "none";
+              });
+          }
+        }
+      }
+    });
+
+    // Listen to auth state changes
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Check if user is admin
+        getIdTokenResult(user).then((idTokenResult) => {
+          if (idTokenResult.claims.admin) {
+            // Show admin tools
+            document.querySelectorAll('.admin-tools').forEach(el => el.style.display = 'flex');
+            adminForm.style.display = 'none'; // Keep admin form hidden initially
+            adminLoginPanel.style.display = 'none'; // Hide panel by default
+            adminLoginBtn.style.display = 'none';
+            adminLogoutBtn.style.display = 'block';
+            adminLoginError.style.display = 'none';
+          } else {
+            // Not admin
+            document.querySelectorAll('.admin-tools').forEach(el => el.style.display = 'none');
+            adminForm.style.display = 'none';
+            adminLoginPanel.style.display = 'none';
+          }
+        }).catch(() => {
+          document.querySelectorAll('.admin-tools').forEach(el => el.style.display = 'none');
+          adminForm.style.display = 'none';
+          adminLoginPanel.style.display = 'none';
+        });
+      } else {
+        // No user signed in
+        document.querySelectorAll('.admin-tools').forEach(el => el.style.display = 'none');
+        adminForm.style.display = 'none';
+        adminLoginPanel.style.display = 'none';
+      }
+    });
+
+    // Login button click
+    adminLoginBtn.addEventListener('click', async () => {
+      adminLoginError.style.display = 'none';
+      const email = adminEmail.value.trim();
+      const password = adminPassword.value;
+      if (!email || !password) {
+        adminLoginError.textContent = "Please enter email and password.";
+        adminLoginError.style.display = 'block';
+        return;
+      }
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const idTokenResult = await getIdTokenResult(userCredential.user);
+        if (idTokenResult.claims.admin) {
+          adminLoginError.style.display = 'none';
+          adminLoginPanel.style.display = 'none';
+          adminLoginBtn.style.display = 'none';
+          adminLogoutBtn.style.display = 'block';
+          // Show admin tools
+          document.querySelectorAll('.admin-tools').forEach(el => el.style.display = 'flex');
+          adminForm.style.display = 'none';
+          adminEmail.value = '';
+          adminPassword.value = '';
+        } else {
+          await signOut(auth);
+          adminLoginError.textContent = "You do not have admin privileges.";
+          adminLoginError.style.display = 'block';
+        }
+      } catch (err) {
+        adminLoginError.textContent = "Login failed: " + err.message;
+        adminLoginError.style.display = 'block';
+      }
+    });
+
+    // Logout button click
+    adminLogoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      adminForm.style.display = 'none';
+      adminLoginPanel.style.display = 'none';
+      document.querySelectorAll('.admin-tools').forEach(el => el.style.display = 'none');
+    });
+
+    // Initial load
     loadProducts();
   </script>
 </body>
