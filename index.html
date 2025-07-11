@@ -411,16 +411,30 @@
   <script>
     const adminForm = document.getElementById('adminForm');
 
-    document.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.key === '.') {
-        e.preventDefault();
+    document.addEventListener('keydown', async (e) => {
+  if (e.ctrlKey && e.key === '.') {
+    e.preventDefault();
+    const user = auth.currentUser;
+    if (!user) {
+      // Not signed in, ignore toggle
+      return;
+    }
+    try {
+      const idTokenResult = await getIdTokenResult(user);
+      if (idTokenResult.claims.admin) {
+        // Admin - toggle form and admin-tools
         const isVisible = adminForm.style.display === 'block';
         adminForm.style.display = isVisible ? 'none' : 'block';
         document.querySelectorAll('.admin-tools').forEach(el => {
           el.style.display = isVisible ? 'none' : 'flex';
         });
       }
-    });
+      // else do nothing if not admin
+    } catch {
+      // error getting claims - do nothing
+    }
+  }
+});
   </script>
 
   <script type="module">
