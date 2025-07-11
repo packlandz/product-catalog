@@ -620,17 +620,17 @@
 
     // Toggle admin form with Ctrl + . only if admin
     document.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.key === '.') {
-        e.preventDefault();
-        if (!isAdmin) return;  // only admins can toggle form
+  if (e.ctrlKey && e.key === ',') {
+    e.preventDefault();
+    if (!isAdmin) return;  // only admins can toggle form
 
-        const isVisible = adminForm.style.display === 'block';
-        adminForm.style.display = isVisible ? 'none' : 'block';
-        document.querySelectorAll('.admin-tools').forEach(el => {
-          el.style.display = isVisible ? 'none' : 'flex';
-        });
-      }
+    const isVisible = adminForm.style.display === 'block';
+    adminForm.style.display = isVisible ? 'none' : 'block';
+    document.querySelectorAll('.admin-tools').forEach(el => {
+      el.style.display = isVisible ? 'none' : 'flex';
     });
+  }
+});
 
     loadProducts();
   </script>
