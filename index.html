@@ -449,9 +449,9 @@
       const totalPages = Math.ceil(filtered.length / productsPerPage);
       const start = (currentPage - 1) * productsPerPage;
       const pageProducts = filtered.slice(start, start + productsPerPage);
-      productGrid.innerHTML = pageProducts.map(p => `
+      productGrid.innerHTML = pageProducts.map(p => 
         <div class="card" data-id="${p.id}" onclick="viewProduct('${p.id}')">
-          ${p.image ? `<img src="${p.image}" alt="${p.name}">` : ""}
+          ${p.image ? <img src="${p.image}" alt="${p.name}"> : ""}
           <h3>${(p.name || "").replace(/\n/g, "<br>")}</h3>
           <div class="description">${p.description || ""}</div>
           <p>${p.price}</p>
@@ -459,7 +459,7 @@
             <button onclick="editProduct('${p.id}')">Edit</button>
             <button onclick="deleteProduct('${p.id}')">Delete</button>
           </div>
-        </div>`).join("");
+        </div>).join("");
       pagination.innerHTML = "";
       for (let i = 1; i <= totalPages; i++) {
         const btn = document.createElement("button");
@@ -485,15 +485,12 @@
       }
     });
 
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    console.log("Checking admin claim…");
-    const tokenResult = await user.getIdTokenResult();
-    console.log("Your token claims are:", tokenResult.claims);
-
-    try {
-      const idTokenResult = await getIdTokenResult(user);
-      isAdmin = !!idTokenResult.claims.admin;
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const idTokenResult = await getIdTokenResult(user);
+          isAdmin = !!idTokenResult.claims.admin;
+          if (isAdmin) {
             document.querySelectorAll('.admin-tools').forEach(el => el.style.display = 'flex');
             adminForm.style.display = 'none';
             adminLoginPanel.style.display = 'none';
