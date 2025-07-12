@@ -485,12 +485,15 @@
       }
     });
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const idTokenResult = await getIdTokenResult(user);
-          isAdmin = !!idTokenResult.claims.admin;
-          if (isAdmin) {
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    console.log("Checking admin claim…");
+    const tokenResult = await user.getIdTokenResult();
+    console.log("Your token claims are:", tokenResult.claims);
+
+    try {
+      const idTokenResult = await getIdTokenResult(user);
+      isAdmin = !!idTokenResult.claims.admin;
             document.querySelectorAll('.admin-tools').forEach(el => el.style.display = 'flex');
             adminForm.style.display = 'none';
             adminLoginPanel.style.display = 'none';
