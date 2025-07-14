@@ -582,7 +582,7 @@
       adminForm.style.display = "block";
     };
 
-    window.deleteProduct = async id => {
+        window.deleteProduct = async id => {
       if (confirm("Are you sure you want to delete this product?")) {
         try {
           await deleteDoc(doc(db, "products", id));
@@ -594,6 +594,50 @@
         }
       }
     };
+
+    // ✅ ADMIN FORM SUBMIT HANDLER
+    adminForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("productName").value.trim();
+      const description = document.getElementById("productDescription").value.trim();
+      const details = document.getElementById("productDetails").value.trim();
+      const price = document.getElementById("productPrice").value.trim();
+      const category = document.getElementById("productCategory").value;
+      const image = document.getElementById("productImageUrl").value.trim();
+
+      if (!name || !price || !category) {
+        alert("Please fill out required fields.");
+        return;
+      }
+
+      const productData = {
+        name,
+        description,
+        details,
+        price,
+        category,
+        image
+      };
+
+      try {
+        if (editingProductId) {
+          const ref = doc(db, "products", editingProductId);
+          await updateDoc(ref, productData);
+          editingProductId = null;
+        } else {
+          await addDoc(productsRef, productData);
+        }
+
+        adminForm.reset();
+        adminForm.style.display = "none";
+        await loadProducts();
+        alert("Product saved!");
+      } catch (err) {
+        console.error("Failed to save product:", err);
+        alert("Error saving product.");
+      }
+    });
   </script>
 </body>
 </html>
