@@ -443,9 +443,15 @@
     }
 
     function renderProducts() {
-      let filtered = allProducts.filter(p => p.category === currentCategory);
       const searchTerm = searchInput.value.trim().toLowerCase();
-      if (searchTerm) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
+let filtered;
+
+if (searchTerm) {
+  filtered = allProducts.filter(p => p.name.toLowerCase().includes(searchTerm));
+} else {
+  filtered = allProducts.filter(p => p.category === currentCategory);
+}
+
       const totalPages = Math.ceil(filtered.length / productsPerPage);
       const start = (currentPage - 1) * productsPerPage;
       const pageProducts = filtered.slice(start, start + productsPerPage);
